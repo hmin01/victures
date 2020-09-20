@@ -1,8 +1,103 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+/* Font */
+@font-face {
+    font-family: 'BBTreeGL';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_nine_@1.1/BBTreeGL.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
+@import url('https://cdn.rawgit.com/innks/NanumSquareRound/master/nanumsquareround.min.css');
 
-a {
-  color: #00B7FF;
+body {
+    font: 14px "NanumSquareRound", Helvetica, Arial, sans-serif;
+}
+/* Top navigation */
+.navbar-brand {
+    font-size: 1.375rem;
+    font-weight: 900;
+}
+.form-search {
+    align-items: center;
+    display: flex;
+    position: relative;
+}
+.form-search > .search-icon {
+    border-right: 1px solid #04BF7B;
+    color: #04BF7B;
+    display: none;
+    left: 8px;
+    padding-right: 7px;
+    padding-top: 1px;
+    position: absolute;
+}
+.form-search > .search-input {
+    transition: padding 0.2s ease-in-out;
+}
+.form-search > .search-input:focus {
+    padding-left: 40px;
+}
+.form-search > .search-input:focus + .search-icon {
+    display: inline-block;
+}
+/* Input */
+.basis-input {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #CED4DA;
+    transition: border-color 0.3s ease-in-out;
+}
+.basis-input:focus {
+    box-shadow: none;
+    outline: none;
+}
+.input-rounded-sm {
+    border-radius: .25rem;
+}
+/* Button */
+.basis-button {
+    display: inline-block;
+    font-weight: 400;
+    color: #212529;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: #FFFFFF;
+    border: 1px solid #CED4DA;
+    padding: 0.5rem 0.75rem;
+    font-size: 13px;
+    line-height: 1.2;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+.basis-button:focus {
+    outline: none;
+}
+.button-rounded-sm {
+    border-radius: .25rem;
+}
+.button-outline-green {
+    color: #28a745;
+    border-color: #28a745;
+}
+.button-outline-green:hover {
+    color: #fff;
+    background-color: #28a745;
+    border-color: #28a745;
+}
+.input-group > .input-group-append > .basis-button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    position: relative;
+    z-index: 2;
+}
+.input-group > .input-group-append > .basis-button {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 }
