@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Victures</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <!-- Fontawesome -->
+        <link rel="stylesheet" type="text/css" href="/stylesheets/fontawesome/css/all.min.css">
+        <!-- Public -->
+        <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+        <!-- Convert page -->
+        <link rel="stylesheet" type="text/css" href="/stylesheets/convert-page.css">
+        <!-- Local -->
+        <style type="text/css">
+
+        </style>
+    </head>
+    <body>
+        <section class="vic-page">
+            <article class="vic-page-nav container-xl">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <a class="navbar-brand" href="/video">Victure</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item active">
+                                <a class="nav-link" href="/video">List</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/convert">Convert</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Coming soon</a>
+                            </li>
+                        </ul>
+                        <form class="form-search my-2 my-lg-0">
+                            <input class="basis-input input-rounded-sm search-input" type="search" placeholder="Search" aria-label="Search" />
+                            <span class="search-icon"><i class="fas fa-search"></i></span>
+                        </form>
+                    </div>
+                </nav>
+            </article>
+            <article class="vic-page-body container-xl d-flex">
+                <div class="left-side">
+                    <div class="form-step h-65">
+                        <div class="form-step-background"></div>
+                        <span class="label-step active">1</span>
+                        <span class="label-step">2</span>
+                        <span class="label-step">3</span>
+                    </div>
+                </div>
+                <div class="right-side">
+                    <div class="form-convert h-65">
+                        <div class="form-input">
+                            <h5 class="input-title">Video content URL</h5>
+                            <p class="input-sub-title">변환하고자 하는 동영상의 URL을 입력하세요.</p>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="addon-input">https://</span>
+                                </div>
+                                <input class="basis-input input-rounded-sm" type="url" id="input-url" />
+                            </div>
+                        </div>
+                        <div class="form-button">
+                            <a class="basis-button button-rounded-sm" name="next" href="/convert/info">Next</a>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
+        <!-- Bootstrap -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" type="text/javascript"></script>
+        <!-- Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" type="text/javascript"></script>
+        <!-- Local -->
+        <script>
+            $(document).ready(() => {
+                
+            });
+        </script>
+    </body>
+</html>

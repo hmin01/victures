@@ -7,6 +7,7 @@ const logger = require('morgan');
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/user');
 const videoRouter = require('./routes/video');
+const convertRouter = require('./routes/convert');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/thumbnail', express.static(path.join(__dirname, '/public/images/thumbn
 app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/video', videoRouter);
+app.use('/convert', convertRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

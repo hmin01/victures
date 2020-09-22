@@ -1,0 +1,103 @@
+.left-side {
+    align-items: center;
+    display: flex;
+    position: relative;
+}
+.right-side {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    margin-left: 58px;
+}
+.h-65 {
+    height: 65%;
+}
+.form-step {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-left: 16px;
+    padding-right: 16px;
+    position: relative;
+}
+.form-step-background {
+    border: 1px solid #04BF7B;
+    height: 100%;
+    left: 36px;
+    position: absolute;
+    top: 0;
+    z-index: -1;
+}
+.label-step {
+    align-items: center;
+    background-color: #FFFFFF;
+    border: 2px solid #04BF7B;
+    border-radius: 50%;
+    color: #03A66A;
+    display: flex;
+    font-size: 21px;
+    font-weight: 900;
+    height: 42px;
+    justify-content: center;
+    width: 42px;
+    vertical-align: middle;
+}
+.label-step.active {
+    background-color: #04BF7B;
+    color: #FFFFFF;
+}
+.form-convert {
+    display: flex;
+    flex-direction: column;
+    padding-left: 16px;
+    padding-right: 16px;
+    width: 100%;
+}
+.form-convert .form-input {
+    justify-self: center;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.form-convert .form-button {
+    align-self: flex-end;
+    display: flex;
+    justify-self: flex-end;
+}
+.form-input .input-title {
+    font-size: 21px;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+.form-input .input-sub-title {
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.form-button > a {
+    cursor: pointer;
+    margin-left: 1rem;
+    text-decoration: none;
+    font-weight: 800;
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+.form-button > a:first-child {
+    margin-left: 0;
+}
+.form-button > a[name="prev"] {
+    background-color: #6C757D;
+    border-color: #6C757D;
+    color: #FFFFFF;
+}
+.form-button > a[name="prev"]:hover {
+    background-color: #5A6268;
+    border-color: #5A6268;
+}
+.form-button > a[name="next"] {
+    background-color: #FFC107;
+    border-color: #FFC107;
+    color: #FFFFFF;
+}
+.form-button > a[name="next"]:hover {
+    background-color: #E0A800;
+    border-color: #D39E00;
+}

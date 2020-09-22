@@ -10,6 +10,15 @@
 body {
     font: 14px "NanumSquareRound", Helvetica, Arial, sans-serif;
 }
+.vic-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.vic-page-body {
+    flex: 1;
+    position: relative;
+}
 /* Top navigation */
 .navbar-brand {
     font-size: 1.375rem;
@@ -91,6 +100,19 @@ body {
     background-color: #28a745;
     border-color: #28a745;
 }
+/* Input group */
+.input-group > .basis-input {
+    position: relative;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 0;
+    margin-bottom: 0;
+}
+.input-group > .basis-input:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
 .input-group > .input-group-append > .basis-button {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -100,4 +122,21 @@ body {
 .input-group > .input-group-append > .basis-button {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+}
+.input-group-text {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1;
+    color: #495057;
+    text-align: center;
+    white-space: nowrap;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
 }
