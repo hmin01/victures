@@ -17,7 +17,7 @@ module.exports = {
         }
     },
     
-    querySync: (query) => {
+    querySync: async (query) => {
         let conn = null;
         try {
             conn = mysql.getConnection();
