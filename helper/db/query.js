@@ -4,7 +4,7 @@ module.exports = {
     selectSync: async (query) => {
         let conn = null;
         try {
-            conn = mysql.getConnection();
+            conn = await mysql.getConnection();
             const [rows] = await conn.query(query);
             conn.release();
 
@@ -20,7 +20,7 @@ module.exports = {
     querySync: async (query) => {
         let conn = null;
         try {
-            conn = mysql.getConnection();
+            conn = await mysql.getConnection();
             await conn.beginTransaction();
             const [rows] = await conn.query(query);
             await conn.commit();
@@ -39,7 +39,7 @@ module.exports = {
     bulkSync: async (query, bulk) => {
         let conn = null;
         try {
-            conn = mysql.getConnection();
+            conn = await mysql.getConnection();
             await conn.beginTransaction();
             const [rows] = await conn.query(query, [bulk]);
             await conn.commit();

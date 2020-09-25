@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Victures</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <!-- Fontawesome -->
+        <link rel="stylesheet" type="text/css" href="/stylesheets/fontawesome/css/all.min.css">
+        <!-- Public -->
+        <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+        <!-- Local -->
+        <style type="text/css">
+
+        </style>
+    </head>
+    <body>
+        <section>
+            <article class="container-xl">
+                <div class="input-group">
+                    <label class="form-label" for="input-email">Email</label>
+                    <input class="form-control" type="email" id="input-email" />
+                </div>
+                <div class="input-group">
+                    <label class="form-label" for="input-nickname">Nickname</label>
+                    <input class="form-control" type="text" id="input-nickname" />
+                </div>
+                <div class="input-group">
+                    <label class="form-label" for="input-password">Password</label>
+                    <input class="form-control" type="password" id="input-password" />
+                </div>
+                <div class="input-group">
+                    <label class="form-label" for="input-password-confirm">Confirm password</label>
+                    <input class="form-control" type="password" id="input-password-confirm" />
+                </div>
+                <button class="btn btn-success" id="btn-register">Register</button>
+            </article>
+        </section>
+
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
+        <!-- Bootstrap -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" type="text/javascript"></script>
+        <!-- Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" type="text/javascript"></script>
+        <!-- Crypto -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/core.min.js" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/sha256.min.js" type="text/javascript"></script>
+        <!-- Public function -->
+        <script src="/javascripts/public-function.js" type="text/javascript"></script>
+        <!-- Local -->
+        <script>
+            // Register
+            document.getElementById('btn-register').addEventListener('click', function() {
+                const $inputEmail = $('#input-email');
+                const $inputNickname = $('#input-nickname');
+                const $inputPassword = $('#input-password');
+                const $inputPasswordConfirm = $('#input-password-confirm');
+
+                const info = {
+                    email: $inputEmail.val(),
+                    nickname: $inputNickname.val(),
+                    password: $inputPassword.val()
+                }
+
+                if (checkBlank(info.email)) {
+                    $inputEmail.focus();
+                    alert("이메일을 입력해주세요.");
+                } else if (checkBlank(info.nickname)) {
+                    $inputNickname.focus();
+                    alert("닉네임을 입력해주세요.");
+                } else if (checkBlank(info.password)) {
+                    $inputPassword.focus();
+                    alert("비밀번호를 입력해주세요.");
+                } else if (checkBlank($inputPasswordConfirm.val())) {
+                    $inputPasswordConfirm.focus();
+                    alert("비밀번호를 확인해주세요.");
+                } else if (info.password !== $inputPasswordConfirm.val()) {
+                    $inputPasswordConfirm.val('');
+                    $inputPasswordConfirm.focus();
+                    alert("입력하신 두 비밀번호가 일치하지 않습니다.");
+                } else {
+                    info.password = CryptoJS.SHA256(info.password).toString();
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/user",
+                        data: "info=" + encodeURIComponent(JSON.stringify(info)),
+                        success: function(res) {
+                            if (res.result) {
+                                alert("회원가입 완료");
+                            } else {
+                                console.error(res.message);
+                            }
+                        }
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>
