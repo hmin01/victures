@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Victures</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <!-- Fontawesome -->
+        <link rel="stylesheet" type="text/css" href="/stylesheets/fontawesome/css/all.min.css">
+        <!-- Public -->
+        <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+        <!-- Local -->
+        <style type="text/css">
+            .container-login {
+                align-items: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                height: 100vh;
+                max-height: 100%;
+            }
+            .form-login {
+                width: 330px;
+            }
+
+            .item-box {
+                background-color: #FFFFFF;
+                border-radius: 0.875rem;
+                color: #212427;
+            }
+
+            .input-login {
+                border-color: #A2E8B7;
+                color: #009C2F;
+                transition: border 0.35s;
+            }
+            .input-login:focus {
+                border-bottom-color: #009C2F;
+            }
+            #btn-login {
+                background-color: #00CF3E;
+                border: 1px solid #00CF3E;
+                color: #FFFFFF;
+                transition: background-color 0.35s, border 0.35s;
+            }
+            #btn-login:hover,
+            #btn-login:focus {
+                background-color: #009C2F;
+                border: 1px solid #009C2F;
+            }
+            #btn-register {
+                cursor: pointer;
+                color: #717477;
+                display: block;
+                margin-top: 1.25rem;
+                text-align: center;
+                text-decoration: none;
+                transition: color 0.35s;
+                width: 100%;
+            }
+            #btn-register:hover,
+            #btn-register:focus {
+                color: #313437;
+            }
+        </style>
+    </head>
+    <body>
+        <section>
+            <article class="container-login">
+                <div class="item-box form-login p-4 shadow">
+                    <div class="input-group mb-3">
+                        <label class="input-description user-select-none font-sm mb-0" for="input-email">Email</label>
+                        <input class="basis-input basis-input-underscore input-login" type="email" id="input-email" placeholder="name@example.com"/>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-description user-select-none font-sm mb-0" for="input-password">Password</label>
+                        <input class="basis-input basis-input-underscore input-login" type="password" id="input-password" placeholder="your password" />
+                    </div>
+                    <button class="basis-button button-block rounded-sm" id="btn-login">Login</button>
+                    <a class="font-sm" id="btn-register">Sign up</a>
+                </div>
+            </article>
+        </section>
+
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
+        <!-- Bootstrap -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" type="text/javascript"></script>
+        <!-- Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" type="text/javascript"></script>
+        <!-- Crypto -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/core.min.js" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/sha256.min.js" type="text/javascript"></script>
+        <!-- Public function -->
+        <script src="/javascripts/public-function.js" type="text/javascript"></script>
+        <!-- Local -->
+        <script>
+            // Register
+            document.getElementById('btn-login').addEventListener('click', function() {
+                const $inputEmail = $('#input-email');
+                const $inputPassword = $('#input-password');
+
+                const info = {
+                    email: $inputEmail.val(),
+                    password: $inputPassword.val()
+                }
+
+                if (checkBlank(info.email)) {
+                    $inputEmail.focus();
+                    alert("이메일을 입력해주세요.");
+                } else if (checkBlank(info.password)) {
+                    $inputPassword.focus();
+                    alert("비밀번호를 입력해주세요.");
+                } else {
+                    info.password = CryptoJS.SHA256(info.password).toString();
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/login",
+                        data: "info=" + encodeURIComponent(JSON.stringify(info)),
+                        success: function(res) {
+                            if (res.result) {
+                                location.href = '/';
+                            } else {
+                                console.error(res.message);
+                            }
+                        }
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>

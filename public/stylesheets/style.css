@@ -52,7 +52,7 @@ body {
     display: block;
     width: 100%;
     padding: 0.5rem 0.75rem;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 400;
     line-height: 1;
     color: #495057;
@@ -64,8 +64,14 @@ body {
     box-shadow: none;
     outline: none;
 }
-.input-rounded-sm {
-    border-radius: .25rem;
+.basis-input-underscore {
+    border: none;
+    border-bottom: 1px solid #CED4DA;
+    padding-left: 0;
+    padding-right: 0;
+}
+.basis-input-underscore:focus {
+    border-color: #9EA4AA;
 }
 /* Button */
 .basis-button {
@@ -81,15 +87,11 @@ body {
     background-color: #FFFFFF;
     border: 1px solid #CED4DA;
     padding: 0.5rem 0.75rem;
-    font-size: 13px;
     line-height: 1.2;
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 .basis-button:focus {
     outline: none;
-}
-.button-rounded-sm {
-    border-radius: .25rem;
 }
 .button-outline-green {
     color: #28a745;
@@ -100,8 +102,12 @@ body {
     background-color: #28a745;
     border-color: #28a745;
 }
+.button-block {
+    display: block;
+    width: 100%;
+}
 /* Input group */
-.input-group > .basis-input {
+.input-group > .combination {
     position: relative;
     -ms-flex: 1 1 auto;
     flex: 1 1 auto;
@@ -109,7 +115,7 @@ body {
     min-width: 0;
     margin-bottom: 0;
 }
-.input-group > .basis-input:not(:first-child) {
+.input-group > .combination:not(:first-child) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
@@ -139,4 +145,61 @@ body {
     background-color: #e9ecef;
     border: 1px solid #ced4da;
     border-radius: .25rem;
+}
+/* Label (text) */
+.input-description {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+/* Font size */
+.font-xxs {
+    font-size: 8px !important;
+}
+.font-xs {
+    font-size: 10px !important;
+}
+.font-sm {
+    font-size: 12px !important;
+}
+.font-basis {
+    font-size: 14px !important;
+}
+.font-md {
+    font-size: 16px !important;
+}
+.font-lg {
+    font-size: 18px !important;
+}
+.font-xl {
+    font-size: 20px !important;
+}
+.font-xxl {
+    font-size: 10px !important;
+}
+/* Border-radius */
+.rounded-xxs {
+    border-radius: .2rem !important;
+}
+.rounded-xs {
+    border-radius: .25rem !important;
+}
+.rounded-sm {
+    border-radius: .3rem !important;
+}
+.rounded-md {
+    border-radius: .35rem !important;
+}
+.rounded-lg {
+    border-radius: .4rem !important;
+}
+.rounded-xl {
+    border-radius: .45rem !important;
+}
+.rounded-xxl {
+    border-radius: .5rem !important;
+}
+.rounded-xxxl {
+    border-radius: .6rem !important;
 }
