@@ -10,8 +10,11 @@
         <link rel="stylesheet" type="text/css" href="/stylesheets/fontawesome/css/all.min.css">
         <!-- Public -->
         <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-        <!-- Local -->
-        <style type="text/css">
+        <!-- Register page css -->
+        <style>
+            body {
+                background-color: #E4F2ED;
+            }
             .container-login {
                 align-items: center;
                 display: flex;
@@ -23,62 +26,76 @@
             .form-login {
                 width: 330px;
             }
-
-            .item-box {
-                background-color: #FFFFFF;
-                border-radius: 0.875rem;
-                color: #212427;
+            .form-login .basis-input,
+            .form-login .form-login-button {
+                border: none;
+                border-radius: 1.25rem;
+                box-shadow: 0 .175rem .28rem rgba(0,0,0,.075);
+                padding: 0.75rem 1.25rem;
             }
-
-            .input-login {
-                border-color: #A2E8B7;
-                color: #009C2F;
-                transition: border 0.35s;
-            }
-            .input-login:focus {
-                border-bottom-color: #009C2F;
-            }
-            #btn-login {
-                background-color: #00CF3E;
-                border: 1px solid #00CF3E;
+            .form-login-button {
+                background-color: #E88502;
                 color: #FFFFFF;
-                transition: background-color 0.35s, border 0.35s;
             }
-            #btn-login:hover,
-            #btn-login:focus {
-                background-color: #009C2F;
-                border: 1px solid #009C2F;
-            }
-            #btn-register {
-                cursor: pointer;
-                color: #717477;
-                display: block;
-                margin-top: 1.25rem;
-                text-align: center;
-                text-decoration: none;
-                transition: color 0.35s;
-                width: 100%;
-            }
-            #btn-register:hover,
-            #btn-register:focus {
+            .form-login-link {
                 color: #313437;
+                cursor: pointer;
+                display: block;
+                margin-top: 1.125rem;
+                text-decoration: none;
+                text-align: center;
+                transition: color 0.35s;
             }
-        </style>
+            .form-login-link:hover {
+                color: #83807C;
+                text-decoration: none;
+            }
+            .form-title {
+                font-size: 31px;
+                margin-bottom: 1.875rem;
+                text-align: center;
+            }
+        
+            .form-login-input {
+                align-items: center;
+                display: flex;
+                position: relative;
+            }
+            .form-login-input .input-icon {
+                color: #694920;
+                font-size: 16px;
+                left: 1.25rem;
+                position: absolute;
+                width: 16px;
+            }
+            .form-login-input .basis-input {
+                padding-left: 2.875rem;
+                transition: padding 0.3s ease-in-out;
+            }
+            .form-login-input .basis-input:focus {
+                padding-left: 1.25rem;
+            }
+            .form-login-input .basis-input:focus + .input-icon {
+                opacity: 0;
+                transition: opacity 0.25s ease-in-out;
+            }
+        </style>      
     </head>
     <body>
         <section>
             <article class="container-login">
-                <div class="item-box form-login p-4 shadow">
-                    <div class="input-group mb-3">
-                        <label class="input-description user-select-none font-sm mb-0" for="input-email">Email</label>
-                        <input class="basis-input basis-input-underscore input-login" type="email" id="input-email" placeholder="name@example.com"/>
+                <div class="form-login">
+                    <h3 class="form-title">Log in</h3>
+                    <div class="input-group form-login-input mb-3">
+                        <input class="basis-input shadow-sm" type="email" id="input-email" placeholder="name@example.com"/>
+                        <span class="input-icon"><i class="far fa-envelope"></i></span>
                     </div>
-                    <div class="input-group mb-3">
-                        <label class="input-description user-select-none font-sm mb-0" for="input-password">Password</label>
-                        <input class="basis-input basis-input-underscore input-login" type="password" id="input-password" placeholder="your password" />
+                    <div class="input-group form-login-input mb-3">
+                        <input class="basis-input shadow-sm" type="password" id="input-password" placeholder="Password" />
+                        <span class="input-icon"><i class="far fa-lock"></i></span>
                     </div>
-                    <button class="basis-button button-block rounded-sm" id="btn-login">Login</button>
-                    <a class="font-sm" id="btn-register">Sign up</a>
+                    <button class="basis-button button-block form-login-button mt-4" id="btn-login">Login</button>
+                    <a class="form-login-link font-sm" id="btn-register">Sign up</a>
                 </div>
             </article>
         </section>
@@ -96,7 +113,7 @@
         <script src="/javascripts/public-function.js" type="text/javascript"></script>
         <!-- Local -->
         <script>
-            // Register
+            // Login
             document.getElementById('btn-login').addEventListener('click', function() {
                 const $inputEmail = $('#input-email');
                 const $inputPassword = $('#input-password');
@@ -123,11 +140,16 @@
                             if (res.result) {
                                 location.href = '/';
                             } else {
-                                console.error(res.message);
+                                alert(res.message);
                             }
                         }
                     });
                 }
+            });
+
+            // Move register page
+            document.getElementById('btn-register').addEventListener('click', function() {
+                location.href = "/register";
             });
         </script>
     </body>

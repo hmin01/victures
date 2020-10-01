@@ -10,31 +10,73 @@
         <link rel="stylesheet" type="text/css" href="/stylesheets/fontawesome/css/all.min.css">
         <!-- Public -->
         <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-        <!-- Local -->
-        <style type="text/css">
-
-        </style>
+        <!-- Register page css -->
+        <style>
+            body {
+                background-color: #E4F2ED;
+            }
+            .container-login {
+                align-items: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                height: 100vh;
+                max-height: 100%;
+            }
+            .form-login {
+                width: 330px;
+            }
+            .form-login .basis-input,
+            .form-login .form-login-button {
+                border: none;
+                border-radius: 1.25rem;
+                box-shadow: 0 .175rem .28rem rgba(0,0,0,.075);
+                padding: 0.75rem 1.25rem;
+            }
+            .form-login-button {
+                background-color: #E88502;
+                color: #FFFFFF;
+            }
+            .form-login-link {
+                color: #313437;
+                cursor: pointer;
+                display: block;
+                margin-top: 1.125rem;
+                text-decoration: none;
+                text-align: center;
+                transition: color 0.35s;
+            }
+            .form-login-link:hover {
+                color: #83807C;
+                text-decoration: none;
+            }
+            .form-title {
+                font-size: 31px;
+                margin-bottom: 1.875rem;
+                text-align: center;
+            }
+        </style>      
     </head>
     <body>
         <section>
-            <article class="container-xl">
-                <div class="input-group">
-                    <label class="form-label" for="input-email">Email</label>
-                    <input class="form-control" type="email" id="input-email" />
+            <article class="container-login">
+                <div class="form-login">
+                    <h3 class="form-title">Create your<br/>account</h3>
+                    <div class="input-group form-login-input mb-3">
+                        <input class="basis-input shadow-sm" type="email" id="input-email" placeholder="name@example.com"/>
+                    </div>
+                    <div class="input-group form-login-input mb-3">
+                        <input class="basis-input input-login" type="text" id="input-name" placeholder="Your name" />
+                    </div>
+                    <div class="input-group form-login-input mb-3">
+                        <input class="basis-input input-login" type="password" id="input-password" placeholder="Password" />
+                    </div>
+                    <div class="input-group form-login-input mb-3">
+                        <input class="basis-input input-login" type="password" id="input-password-confirm" placeholder="Confirm password" />
+                    </div>
+                    <button class="basis-button button-block form-login-button mt-4" id="btn-register">Register</button>
+                    <a class="form-login-link font-sm" id="btn-login">Sign in</a>
                 </div>
-                <div class="input-group">
-                    <label class="form-label" for="input-nickname">Nickname</label>
-                    <input class="form-control" type="text" id="input-nickname" />
-                </div>
-                <div class="input-group">
-                    <label class="form-label" for="input-password">Password</label>
-                    <input class="form-control" type="password" id="input-password" />
-                </div>
-                <div class="input-group">
-                    <label class="form-label" for="input-password-confirm">Confirm password</label>
-                    <input class="form-control" type="password" id="input-password-confirm" />
-                </div>
-                <button class="btn btn-success" id="btn-register">Register</button>
             </article>
         </section>
 
@@ -54,13 +96,13 @@
             // Register
             document.getElementById('btn-register').addEventListener('click', function() {
                 const $inputEmail = $('#input-email');
-                const $inputNickname = $('#input-nickname');
+                const $inputName = $('#input-name');
                 const $inputPassword = $('#input-password');
                 const $inputPasswordConfirm = $('#input-password-confirm');
 
                 const info = {
                     email: $inputEmail.val(),
-                    nickname: $inputNickname.val(),
+                    nickname: $inputName.val(),
                     password: $inputPassword.val()
                 }
 
@@ -68,7 +110,7 @@
                     $inputEmail.focus();
                     alert("이메일을 입력해주세요.");
                 } else if (checkBlank(info.nickname)) {
-                    $inputNickname.focus();
+                    $inputName.focus();
                     alert("닉네임을 입력해주세요.");
                 } else if (checkBlank(info.password)) {
                     $inputPassword.focus();
@@ -90,12 +132,24 @@
                         success: function(res) {
                             if (res.result) {
                                 alert("회원가입 완료");
+                                // Clear input
+                                $inputEmail.val('');
+                                $inputName.val('');
+                                $inputPassword.val('');
+                                $inputPasswordConfirm.val('');
+                                // Move login page
+                                location.href = "/login";
                             } else {
                                 console.error(res.message);
                             }
                         }
                     });
                 }
+            });
+
+             // Move login page
+             document.getElementById('btn-login').addEventListener('click', function() {
+                location.href = "/login";
             });
         </script>
     </body>
