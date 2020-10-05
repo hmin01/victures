@@ -10,6 +10,9 @@
 body {
     font: 14px "NanumSquareRound", Helvetica, Arial, sans-serif;
 }
+.basis-background-color {
+    background-color: #E4F2ED;
+}
 .vic-page {
     display: flex;
     flex-direction: column;
@@ -39,9 +42,12 @@ body {
     position: absolute;
 }
 .form-search > .search-input {
-    transition: padding 0.2s ease-in-out;
+    background-color: #DDEBE6;
+    font-size: 13px;
+    transition: background-color 0.25s ease-in-out, padding 0.2s ease-in-out;
 }
 .form-search > .search-input:focus {
+    background-color: #FFFFFF;
     padding-left: 40px;
 }
 .form-search > .search-input:focus + .search-icon {
@@ -56,7 +62,7 @@ body {
     font-weight: 400;
     line-height: 1;
     color: #495057;
-    background-color: #fff;
+    background-color: #FFFFFF;
     border: 1px solid #CED4DA;
     transition: border-color 0.3s ease-in-out;
 }
@@ -118,6 +124,10 @@ body {
 .input-group > .combination:not(:first-child) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+}
+.input-group > .combination:last-child {
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
 }
 .input-group > .input-group-append > .basis-button {
     border-top-left-radius: 0;

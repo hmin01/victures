@@ -21,7 +21,7 @@
     position: relative;
 }
 .form-step-background {
-    border: 1px solid #04BF7B;
+    border: 1px solid #E88502;
     height: 100%;
     left: 36px;
     position: absolute;
@@ -31,9 +31,9 @@
 .label-step {
     align-items: center;
     background-color: #FFFFFF;
-    border: 2px solid #04BF7B;
+    border: 2px solid #E88502;
     border-radius: 50%;
-    color: #03A66A;
+    color: #F54A0A;
     display: flex;
     font-size: 21px;
     font-weight: 900;
@@ -43,8 +43,11 @@
     vertical-align: middle;
 }
 .label-step.active {
-    background-color: #04BF7B;
+    background-color: #E88502;
     color: #FFFFFF;
+}
+.label-step.finish {
+    background-color: #F7E8D5;
 }
 .form-convert {
     display: flex;
@@ -93,11 +96,11 @@
     border-color: #5A6268;
 }
 .form-button > a[name="next"] {
-    background-color: #FFC107;
-    border-color: #FFC107;
+    background-color: #E88502;
+    border-color: #E88502;
     color: #FFFFFF;
 }
 .form-button > a[name="next"]:hover {
-    background-color: #E0A800;
-    border-color: #D39E00;
+    background-color: #DB7D02;
+    border-color: #DB7D02;
 }

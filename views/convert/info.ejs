@@ -24,7 +24,7 @@
             }
         </style>
     </head>
-    <body>
+    <body class="basis-background-color">
         <section class="vic-page">
             <article class="vic-page-nav container-xl">
                 <nav class="navbar navbar-expand-lg navbar-light">
@@ -55,7 +55,7 @@
                 <div class="left-side">
                     <div class="form-step h-65">
                         <div class="form-step-background"></div>
-                        <span class="label-step">1</span>
+                        <span class="label-step finish"><i class="fa fa-check"></i></span>
                         <span class="label-step active">2</span>
                         <span class="label-step">3</span>
                     </div>
@@ -66,16 +66,57 @@
                             <h5 class="form-title">Video infomation</h5>
                             <div class="video-box">
                                 <div class="video-thumbnail-form">
-                                    <img class="video-thumbnail" src="/thumbnail/test.png" />
+                                    <img class="video-thumbnail" src="<%= info.thumbnail.url %>" />
                                 </div>
                                 <div class="video-content">
-
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <label class="video-content-subtitle">URL</label>
+                                            <p class="video-title"><%= info.url %></p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <label class="video-content-subtitle">Title</label>
+                                            <p class="video-title"><%= info.title %></p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <label class="video-content-subtitle">Author</label>
+                                            <p class="video-author"><%= info.author %></p>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label class="video-content-subtitle">Upload date</label>
+                                            <p class="video-upload-date"><%= info.uploadDate %></p>
+                                        </div>
+                                    </div> 
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <label class="video-content-subtitle">Duration</label>
+                                            <p class="video-author"><%= info.duration %></p>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label class="video-content-subtitle">Categories</label>
+                                            <p class="video-author"><%= info.categories %></p>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label class="video-content-subtitle">View count</label>
+                                            <p class="video-upload-date"><%= info.viewCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") %></p>
+                                        </div>
+                                    </div>    
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <label class="video-content-subtitle">Description</label>
+                                            <p class="video-description"><%= info.description %></p>
+                                        </div>
+                                    </div>                              
                                 </div>
                             </div>
                         </div>
                         <div class="form-button">
-                            <a class="basis-button button-rounded-sm" name="prev" href="/convert">Prev</a>
-                            <a class="basis-button button-rounded-sm" name="next" href="/convert/select">Next</a>
+                            <a class="basis-button button-rounded-sm" name="prev" href="/convert/step/import">Prev</a>
+                            <a class="basis-button button-rounded-sm" name="next" href="/convert/step/select">Next</a>
                         </div>
                     </div>
                 </div>

@@ -7,3 +7,13 @@ function checkBlank(value) {
         return value.replace(blankPattern, "") === "";
     }
 }
+
+function checkUrlFormat(value) {
+    if (value === undefined || value === null || value === "") {
+        return false;
+    } else {
+        const urlPattern = /((\w+)?(:(\w+))?@)?([^\/\?:]+)(:(\d+))?(\/?([^\/\?#][^\?#]*)?)?(\?([^#]+))?(#(\w*))?/;
+        console.log(urlPattern.test(value));
+        return urlPattern.test(value);
+    }
+}
