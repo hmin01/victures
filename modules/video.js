@@ -32,6 +32,7 @@ module.exports = {
                     console.error(error);
                     callback({result: false, messaeg: error});
                 } else {
+                    console.log(stdout);
                     callback({result: true, message: JSON.parse(stdout)});
                 }
             });
