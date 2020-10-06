@@ -14,10 +14,10 @@
         <link rel="stylesheet" type="text/css" href="/stylesheets/convert-page.css">
         <!-- Local -->
         <style type="text/css">
-            
+
         </style>
     </head>
-    <body>
+    <body class="basis-background-color">
         <section class="vic-page">
             <article class="vic-page-nav container-xl">
                 <nav class="navbar navbar-expand-lg navbar-light">
@@ -48,8 +48,8 @@
                 <div class="left-side">
                     <div class="form-step h-65">
                         <div class="form-step-background"></div>
-                        <span class="label-step">1</span>
-                        <span class="label-step">2</span>
+                        <span class="label-step finish"><i class="fa fa-check"></i></span>
+                        <span class="label-step finish"><i class="fa fa-check"></i></span>
                         <span class="label-step active">3</span>
                     </div>
                 </div>
@@ -60,14 +60,14 @@
                             <p class="input-sub-title">변환하고자 하는 동영상의 URL을 입력하세요.</p>
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="addon-input">https://</span>
+                                    <span class="input-group-text" id="addon-input">>></span>
                                 </div>
-                                <input class="basis-input combination input-rounded-sm" type="url" id="input-url" />
+                                <input class="basis-input combination" type="url" id="input-url" />
                             </div>
                         </div>
                         <div class="form-button">
-                            <a class="basis-button button-rounded-sm" name="prev" href="/convert/info">Prev</a>
-                            <a class="basis-button button-rounded-sm" name="next" href="">Next</a>
+                            <a class="basis-button rounded-sm px-3" name="prev" href="/convert/step/info">Prev</a>
+                            <a class="basis-button rounded-sm px-3" name="next" id="btn-step-next">Next</a>
                         </div>
                     </div>
                 </div>
@@ -80,10 +80,32 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" type="text/javascript"></script>
         <!-- Popper -->
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" type="text/javascript"></script>
+        !-- Public function -->
+        <script src="/javascripts/public-function.js" type="text/javascript"></script>
         <!-- Local -->
         <script>
-            $(document).ready(() => {
-                
+            // Next button event
+            document.getElementById('btn-step-next').addEventListener('click', function() {
+                const url = $('#input-url').val();
+
+                if (checkBlank(url)) {
+                    alert("영상의 URL 주소를 입력해주세요.");
+                } else if (!checkUrlFormat(url)) {
+                    alert("URL 형식이 아닙니다.");
+                } else {
+                    $.ajax({
+                        type: "POST",
+                        url: "/convert/step/import",
+                        data: "url=" + encodeURIComponent(url),
+                        success: function(res) {
+                            if (res.result) {
+                                location.href = "/convert/step/info";
+                            } else {
+                                alert(res.message);
+                            }
+                        }
+                    });
+                }
             });
         </script>
     </body>

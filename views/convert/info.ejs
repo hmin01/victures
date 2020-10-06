@@ -12,14 +12,72 @@
         <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
         <!-- Convert page -->
         <link rel="stylesheet" type="text/css" href="/stylesheets/convert-page.css">
+        <!-- Loading -->
+        <link rel="stylesheet" type="text/css" href="/stylesheets/loading.css">
         <!-- Local -->
         <style type="text/css">
             .video-thumbnail-form {
-                min-width: 300px;
+                min-width: 350px;
+                margin-bottom: 15px;
                 position: relative;
-                width: 50%;
+                width: 60%;
             }
             .video-thumbnail-form .video-thumbnail {
+                width: 100%;
+            }
+
+            .video-content {
+                background-color: #FEFEFE;
+                border-radius: 0.875rem;
+                border-top-right-radius: 0;
+                position: relative;
+            }
+            .video-content .form-title {
+                background-color: #FEFEFE;
+                border-top-left-radius: 0.875rem;
+                border-top-right-radius: 0.825rem;
+                font-size: 18px;
+                margin-bottom: 0;
+                line-height: 1;
+                position: absolute;
+                top: -2.625rem;
+                right: 0;
+                padding: 0.75rem 1.375rem;
+            }
+            .video-content-row {
+                display: flex;
+                padding: 0.875rem 1.125rem;
+                border-bottom: 1px dashed #E7EAEC;
+            }
+            .video-content-subtitle,
+            .video-content-detail {
+                display: inline-block;
+                margin-bottom: 0;
+                line-height: 1.4;
+            }
+            .video-content-subtitle {
+                font-weight: 600;
+                width: 150px;
+            }
+            .video-content-detail {
+                flex: 1;
+                font-weight: 200;
+            }
+            .video-content-detail[name="url"],
+            .video-content-detail[name="author"] {
+                color: #8000AB;
+                cursor: pointer;
+                font-weight: 500;
+                transition: color 0.4s ease-out;
+            }
+            .video-content-detail[name="url"]:hover,
+            .video-content-detail[name="author"]:hover {
+                color: #F73B0C;
+            }
+
+            #loading-info {
+                display: flex;
+                justify-content: center;
                 width: 100%;
             }
         </style>
@@ -61,62 +119,99 @@
                     </div>
                 </div>
                 <div class="right-side">
-                    <div class="form-convert h-65">
+                    <div class="form-convert d-none">
                         <div class="form-info">
-                            <h5 class="form-title">Video infomation</h5>
                             <div class="video-box">
                                 <div class="video-thumbnail-form">
-                                    <img class="video-thumbnail" src="<%= info.thumbnail.url %>" />
+                                    <img class="video-thumbnail" />
                                 </div>
-                                <div class="video-content">
+                                <div class="video-content shadow-sm">
+                                    <h5 class="form-title">Video infomation</h5>
                                     <div class="row">
-                                        <div class="col-lg-12">
-                                            <label class="video-content-subtitle">URL</label>
-                                            <p class="video-title"><%= info.url %></p>
+                                        <div class="col-12">
+                                            <div class="video-content-row">
+                                                <label class="video-content-subtitle">URL</label>
+                                                <p class="video-content-detail" name="url"></p>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-lg-12">
-                                            <label class="video-content-subtitle">Title</label>
-                                            <p class="video-title"><%= info.title %></p>
+                                        <div class="col-12">
+                                            <div class="video-content-row">
+                                                <label class="video-content-subtitle">Title</label>
+                                                <p class="video-content-detail" name="title"></p>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-lg-6">
-                                            <label class="video-content-subtitle">Author</label>
-                                            <p class="video-author"><%= info.author %></p>
+                                        <div class="col-8 pr-0">
+                                            <div class="video-content-row">
+                                                <label class="video-content-subtitle">Author</label>
+                                                <p class="video-content-detail" name="author"></p>
+                                            </div>
                                         </div>
-                                        <div class="col-lg-6">
-                                            <label class="video-content-subtitle">Upload date</label>
-                                            <p class="video-upload-date"><%= info.uploadDate %></p>
+                                        <div class="col-4 pl-0">
+                                            <div class="video-content-row">
+                                                <label class="video-content-subtitle">Upload date</label>
+                                                <p class="video-content-detail" name="uploadDate"></p>
+                                            </div>
                                         </div>
                                     </div> 
                                     <div class="row">
-                                        <div class="col-lg-4">
-                                            <label class="video-content-subtitle">Duration</label>
-                                            <p class="video-author"><%= info.duration %></p>
+                                        <div class="col-4 pr-0">
+                                            <div class="video-content-row">
+                                                <label class="video-content-subtitle">Duration</label>
+                                                <p class="video-content-detail" name="duration"></p>
+                                            </div>
                                         </div>
-                                        <div class="col-lg-4">
-                                            <label class="video-content-subtitle">Categories</label>
-                                            <p class="video-author"><%= info.categories %></p>
+                                        <div class="col-4 pl-0 pr-0">
+                                            <div class="video-content-row">
+                                                <label class="video-content-subtitle">Categories</label>
+                                                <p class="video-content-detail" name="categories"></p>
+                                            </div>
                                         </div>
-                                        <div class="col-lg-4">
-                                            <label class="video-content-subtitle">View count</label>
-                                            <p class="video-upload-date"><%= info.viewCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") %></p>
+                                        <div class="col-4 pl-0">
+                                            <div class="video-content-row">
+                                                <label class="video-content-subtitle">View count</label>
+                                                <p class="video-content-detail" name="viewCount"></p>
+                                            </div>
                                         </div>
                                     </div>    
                                     <div class="row">
                                         <div class="col-lg-12">
-                                            <label class="video-content-subtitle">Description</label>
-                                            <p class="video-description"><%= info.description %></p>
+                                            <div class="video-content-row border-0">
+                                                <label class="video-content-subtitle">Description</label>
+                                                <p class="video-content-detail" name="description"></p>
+                                            </div>
                                         </div>
                                     </div>                              
                                 </div>
                             </div>
                         </div>
-                        <div class="form-button">
-                            <a class="basis-button button-rounded-sm" name="prev" href="/convert/step/import">Prev</a>
-                            <a class="basis-button button-rounded-sm" name="next" href="/convert/step/select">Next</a>
+                        <div class="form-button mt-3">
+                            <a class="basis-button rounded-sm px-3" name="prev" href="/convert/step/import">Prev</a>
+                            <a class="basis-button rounded-sm px-3" name="next" id="btn-step-next">Next</a>
+                        </div>
+                    </div>
+                    <!-- Loading -->
+                    <div id="loading-info">
+                        <div class="loading-table-circle">
+                            <span class="loading-message">Loading<br/>video info</span>
+                            <div class="sk-chase">
+                                <div class="sk-chase-dot"></div>
+                                <div class="sk-chase-dot"></div>
+                                <div class="sk-chase-dot"></div>
+                                <div class="sk-chase-dot"></div>
+                                <div class="sk-chase-dot"></div>
+                                <div class="sk-chase-dot"></div>
+                                <div class="sk-chase-dot"></div>
+                                <div class="sk-chase-dot"></div>
+                                <div class="sk-chase-dot"></div>
+                                <div class="sk-chase-dot"></div>
+                                <div class="sk-chase-dot"></div>
+                                <div class="sk-chase-dot"></div>
+                                <div class="sk-chase-dot"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -132,7 +227,57 @@
         <!-- Local -->
         <script>
             $(document).ready(() => {
-                
+                // Get video info (using session)
+                $.ajax({
+                    type: "POST",
+                    url: "/convert/step/info",
+                    success: function(res) {
+                        if (res.result) {
+                            $('.video-thumbnail').attr('src', res.message.thumbnail.url);
+                            $('.video-content-detail[name="url"]').text(res.message.url);
+                            $('.video-content-detail[name="title"]').text(res.message.title);
+                            $('.video-content-detail[name="author"]').text(res.message.author);
+                            $('.video-content-detail[name="author"]').data('url', res.message.authorUrl);
+                            $('.video-content-detail[name="uploadDate"]').text(res.message.uploadDate);
+                            $('.video-content-detail[name="duration"]').text(res.message.durationString);
+                            $('.video-content-detail[name="duration"]').data('time', res.message.duration);
+                            $('.video-content-detail[name="categories"]').text(res.message.categories);
+                            $('.video-content-detail[name="viewCount"]').text(res.message.viewCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                            $('.video-content-detail[name="description"]').text(res.message.description);
+
+                            // Relase loading
+                            $('#loading-info').addClass('d-none');
+                            // Show info
+                            $('.form-convert').removeClass('d-none');
+
+                            // URL click event
+                            $('.video-content-detail[name="url"]').on('click', function() {
+                                const url = $(this).text();
+                                window.open(url, '_blank')
+                            });
+
+                            // Author click event
+                            $('.video-content-detail[name="author"]').on('click', function() {
+                                const url = $(this).data('url');
+                                window.open(url, '_blank')
+                            });
+                        } else {
+                            alert("Session expiration");
+                            location.href = '/convert/step/import';
+                        }
+                    }
+                });
+
+                // Next step
+                $('#btn-step-next').on('click', function() {
+                    const duration = $('.video-content-detail[name="duration"]').data('time');
+                    console.log(duration);
+                    if (duration > (60 * 25)) {
+                        alert("현재 Beta 버전에서는 영상 길이가 최대 25분인 영상만 지원하고 있습니다.");
+                    } else {
+                        location.href = '/convert/step/select';
+                    }
+                });
             });
         </script>
     </body>
