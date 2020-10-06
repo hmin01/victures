@@ -11,7 +11,6 @@ module.exports = {
     parseUrl: function(urlString) {
         try {
             const parse = url.parse(urlString);
-            console.log(parse);
             if (parse.host === undefined || parse.host === null) {
                 return {result: false, message: "Invalid url (Please include http/https)"};
             } else if (!supportHost.includes(parse.host)) {
@@ -32,7 +31,6 @@ module.exports = {
                     console.error(error);
                     callback({result: false, messaeg: error});
                 } else {
-                    console.log(stdout);
                     callback({result: true, message: JSON.parse(stdout)});
                 }
             });

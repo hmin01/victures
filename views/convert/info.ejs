@@ -234,16 +234,16 @@
                     success: function(res) {
                         if (res.result) {
                             $('.video-thumbnail').attr('src', res.message.thumbnail.url);
-                            $('.video-content-detail[name="url"]').text(res.message.url);
-                            $('.video-content-detail[name="title"]').text(res.message.title);
-                            $('.video-content-detail[name="author"]').text(res.message.author);
+                            $('.video-content-detail[name="url"]').text(printNull(res.message.url));
+                            $('.video-content-detail[name="title"]').text(printNull(res.message.title));
+                            $('.video-content-detail[name="author"]').text(printNull(res.message.author));
                             $('.video-content-detail[name="author"]').data('url', res.message.authorUrl);
-                            $('.video-content-detail[name="uploadDate"]').text(res.message.uploadDate);
-                            $('.video-content-detail[name="duration"]').text(res.message.durationString);
+                            $('.video-content-detail[name="uploadDate"]').text(printNull(res.message.uploadDate));
+                            $('.video-content-detail[name="duration"]').text(printNull(res.message.durationString));
                             $('.video-content-detail[name="duration"]').data('time', res.message.duration);
-                            $('.video-content-detail[name="categories"]').text(res.message.categories);
-                            $('.video-content-detail[name="viewCount"]').text(res.message.viewCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                            $('.video-content-detail[name="description"]').text(res.message.description);
+                            $('.video-content-detail[name="categories"]').text(printNull(res.message.categories));
+                            $('.video-content-detail[name="viewCount"]').text(printNull(res.message.viewCount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                            $('.video-content-detail[name="description"]').text(printNull(res.message.description));
 
                             // Relase loading
                             $('#loading-info').addClass('d-none');
@@ -279,6 +279,14 @@
                     }
                 });
             });
+
+            function printNull(value) {
+                if (value === null) {
+                    return "-";
+                } else {
+                    return value;
+                }
+            }
         </script>
     </body>
 </html>
