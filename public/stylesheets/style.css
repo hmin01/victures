@@ -53,6 +53,44 @@ body {
 .form-search > .search-input:focus + .search-icon {
     display: inline-block;
 }
+/* Modal */
+.modal-sm {
+    max-width: 380px;
+}
+.modal-confirm .modal-header {
+    align-items: center;
+    border-bottom: none;
+    display: flex;
+    justify-content: space-between;
+    padding: 1.125rem 1.75rem;
+}
+.modal-confirm .modal-header > .modal-title {
+    font-size: 16px;
+    margin-bottom: 0;
+    line-height: 1.4;
+    word-break: keep-all;
+}
+.modal-confirm .modal-footer {
+    border-top: none;
+    padding: 0;
+}
+.modal-confirm .modal-footer > button {
+    border-bottom: none;
+    border-radius: 0;
+    flex: 1;
+    margin: 0;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+.modal-confirm .modal-footer > button:first-child {
+    border-left: none;
+    border-right: none;
+    border-bottom-left-radius: calc(.3rem - 1px);
+}
+.modal-confirm .modal-footer > button:last-child {
+    border-right: none;
+    border-bottom-right-radius: calc(.3rem - 1px);
+}
 /* Input */
 .basis-input {
     display: block;
@@ -95,6 +133,9 @@ body {
     padding: 0.5rem 0.75rem;
     line-height: 1.2;
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+.basis-button:hover {
+    background-color: #CED4DA;
 }
 .basis-button:focus {
     outline: none;

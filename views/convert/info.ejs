@@ -55,6 +55,10 @@
                 margin-bottom: 0;
                 line-height: 1.4;
             }
+            .video-content-detail > p {
+                display: inline-block;
+                margin-bottom: 0;
+            }
             .video-content-subtitle {
                 font-weight: 600;
                 width: 150px;
@@ -63,15 +67,15 @@
                 flex: 1;
                 font-weight: 200;
             }
-            .video-content-detail[name="url"],
-            .video-content-detail[name="author"] {
+            .video-content-detail[name="url"] > p,
+            .video-content-detail[name="author"] > p {
                 color: #8000AB;
                 cursor: pointer;
                 font-weight: 500;
                 transition: color 0.4s ease-out;
             }
-            .video-content-detail[name="url"]:hover,
-            .video-content-detail[name="author"]:hover {
+            .video-content-detail[name="url"] > p:hover,
+            .video-content-detail[name="author"] > p:hover {
                 color: #F73B0C;
             }
 
@@ -131,7 +135,7 @@
                                         <div class="col-12">
                                             <div class="video-content-row">
                                                 <label class="video-content-subtitle">URL</label>
-                                                <p class="video-content-detail" name="url"></p>
+                                                <div class="video-content-detail" name="url"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -139,7 +143,7 @@
                                         <div class="col-12">
                                             <div class="video-content-row">
                                                 <label class="video-content-subtitle">Title</label>
-                                                <p class="video-content-detail" name="title"></p>
+                                                <div class="video-content-detail" name="title"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -147,13 +151,13 @@
                                         <div class="col-8 pr-0">
                                             <div class="video-content-row">
                                                 <label class="video-content-subtitle">Author</label>
-                                                <p class="video-content-detail" name="author"></p>
+                                                <div class="video-content-detail" name="author"></div>
                                             </div>
                                         </div>
                                         <div class="col-4 pl-0">
                                             <div class="video-content-row">
                                                 <label class="video-content-subtitle">Upload date</label>
-                                                <p class="video-content-detail" name="uploadDate"></p>
+                                                <div class="video-content-detail" name="uploadDate"></div>
                                             </div>
                                         </div>
                                     </div> 
@@ -161,19 +165,19 @@
                                         <div class="col-4 pr-0">
                                             <div class="video-content-row">
                                                 <label class="video-content-subtitle">Duration</label>
-                                                <p class="video-content-detail" name="duration"></p>
+                                                <div class="video-content-detail" name="duration"></div>
                                             </div>
                                         </div>
                                         <div class="col-4 pl-0 pr-0">
                                             <div class="video-content-row">
                                                 <label class="video-content-subtitle">Categories</label>
-                                                <p class="video-content-detail" name="categories"></p>
+                                                <div class="video-content-detail" name="categories"></div>
                                             </div>
                                         </div>
                                         <div class="col-4 pl-0">
                                             <div class="video-content-row">
                                                 <label class="video-content-subtitle">View count</label>
-                                                <p class="video-content-detail" name="viewCount"></p>
+                                                <div class="video-content-detail" name="viewCount"></div>
                                             </div>
                                         </div>
                                     </div>    
@@ -181,7 +185,7 @@
                                         <div class="col-lg-12">
                                             <div class="video-content-row border-0">
                                                 <label class="video-content-subtitle">Description</label>
-                                                <p class="video-content-detail" name="description"></p>
+                                                <div class="video-content-detail" name="description"></div>
                                             </div>
                                         </div>
                                     </div>                              
@@ -218,6 +222,21 @@
             </article>
         </section>
 
+        <!-- Modal -->
+        <div class="modal fade" id="modal-confirm" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-confirm modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">해당 영상에 대해 키워드 및 프레임 추출 작업을 진행하시겠습니까?</h5>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="basis-button" data-dismiss="modal">Close</button>
+                        <button type="button" class="basis-button" name="next">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- jQuery -->
         <script src="https://code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
         <!-- Bootstrap -->
@@ -233,17 +252,17 @@
                     url: "/convert/step/info",
                     success: function(res) {
                         if (res.result) {
-                            $('.video-thumbnail').attr('src', res.message.thumbnail.url);
-                            $('.video-content-detail[name="url"]').text(printNull(res.message.url));
-                            $('.video-content-detail[name="title"]').text(printNull(res.message.title));
-                            $('.video-content-detail[name="author"]').text(printNull(res.message.author));
-                            $('.video-content-detail[name="author"]').data('url', res.message.authorUrl);
-                            $('.video-content-detail[name="uploadDate"]').text(printNull(res.message.uploadDate));
-                            $('.video-content-detail[name="duration"]').text(printNull(res.message.durationString));
-                            $('.video-content-detail[name="duration"]').data('time', res.message.duration);
-                            $('.video-content-detail[name="categories"]').text(printNull(res.message.categories));
-                            $('.video-content-detail[name="viewCount"]').text(printNull(res.message.viewCount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                            $('.video-content-detail[name="description"]').text(printNull(res.message.description));
+                            $('.video-thumbnail').attr('src', res.message.thumbnail);
+                            $('.video-content-detail[name="url"]').html(`<p>${printNull(res.message.url)}</p>`);
+                            $('.video-content-detail[name="title"]').html(`<p>${printNull(res.message.title)}</p>`);
+                            $('.video-content-detail[name="author"]').html(`<p>${printNull(res.message.author)}</p>`);
+                            $('.video-content-detail[name="author"] > p').data('url', res.message.authorUrl);
+                            $('.video-content-detail[name="uploadDate"]').html(`<p>${printNull(res.message.uploadDate)}</p>`);
+                            $('.video-content-detail[name="duration"]').html(`<p>${printNull(res.message.durationString)}</p>`);
+                            $('.video-content-detail[name="duration"] > p').data('time', res.message.duration);
+                            $('.video-content-detail[name="categories"]').html(`<p>${printNull(res.message.categories)}</p>`);
+                            $('.video-content-detail[name="viewCount"]').html(`<p>${printNull(res.message.viewCount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>`);
+                            $('.video-content-detail[name="description"]').html(`<p>${printNull(res.message.description)}</p>`);
 
                             // Relase loading
                             $('#loading-info').addClass('d-none');
@@ -251,13 +270,13 @@
                             $('.form-convert').removeClass('d-none');
 
                             // URL click event
-                            $('.video-content-detail[name="url"]').on('click', function() {
+                            $('.video-content-detail[name="url"] > p').on('click', function() {
                                 const url = $(this).text();
                                 window.open(url, '_blank')
                             });
 
                             // Author click event
-                            $('.video-content-detail[name="author"]').on('click', function() {
+                            $('.video-content-detail[name="author"] > p').on('click', function() {
                                 const url = $(this).data('url');
                                 window.open(url, '_blank')
                             });
@@ -268,8 +287,12 @@
                     }
                 });
 
-                // Next step
+                // Open confirm modal
                 $('#btn-step-next').on('click', function() {
+                    $('#modal-confirm').modal('show');
+                });
+                // Next step (next button in modal)
+                $('#modal-confirm button[name="next"]').on('click', function() {
                     const duration = $('.video-content-detail[name="duration"]').data('time');
                     console.log(duration);
                     if (duration > (60 * 25)) {
@@ -278,6 +301,7 @@
                         location.href = '/convert/step/select';
                     }
                 });
+
             });
 
             function printNull(value) {
