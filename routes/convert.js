@@ -13,7 +13,7 @@ router.get('/step/import', (req, res) => {
     // Render
     res.render('convert/import', {url: url});
 });
-
+/* [Step 1] parse URL api (support only youtube) */
 router.post('/step/import', async (req, res) => {
     const url = decodeURIComponent(req.body.url);
     // Analysis URL
@@ -36,12 +36,13 @@ router.get('/step/info', (req, res) => {
     }
 });
 
+/* [Step 2] Get video info API */
 router.post('/step/info', (req, res) => {
     if (req.session.video === undefined || req.session.video.url === undefined) {
         res.json({result: false, message: "Invalid process flow"});
     } else {
         if (req.session.video.info === undefined || req.session.video.info === null) {
-            video.import(req.session.video.url, function(result) {
+            video.getInfo(req.session.video.url, function(result) {
                 if (result.result) {
                     // Calculate duration (convert string)
                     const duration = result.videoInfo.duration;
@@ -85,7 +86,24 @@ router.post('/step/info', (req, res) => {
 
 /* Step 3 page */
 router.get('/step/select', (req, res) => {
-    res.render('convert/select');
+    if (req.session.video === undefined || req.session.video.url === undefined) {
+        res.redirect(401, '/convert/step/import');
+    } else {
+        res.render('convert/select');
+    }
 });
+
+/* [Step 3] Download video API */
+router.post('/step/download', (req, res) => {
+    if (req.session.video === undefined || req.session.video.url === undefined) {
+        res.json({result: false, message: "Invalid process flow"});
+    } else {
+        console.log("r 1");
+        console.log(req.session.video.url);
+        video.download(req.session.video.url, function(result) {
+            res.json(result);
+        });
+    }
+})
 
 module.exports = router;

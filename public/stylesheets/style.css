@@ -62,10 +62,10 @@ body {
     border-bottom: none;
     display: flex;
     justify-content: space-between;
-    padding: 1.125rem 1.75rem;
+    padding: 1.125rem 1.625rem 0.875rem 1.625rem;
 }
 .modal-confirm .modal-header > .modal-title {
-    font-size: 16px;
+    font-size: 15px;
     margin-bottom: 0;
     line-height: 1.4;
     word-break: keep-all;
@@ -202,6 +202,28 @@ body {
     display: block;
     font-size: 1rem;
     margin-bottom: 4px;
+}
+/* Span label */
+.span-label {
+    background-color: #DDEBE6;
+    border: 1px solid #CED4DA;
+    border-radius: 0.375rem;
+    color: #313437;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 900;
+    padding: 0.375rem 0.75rem;
+    user-select: none;
+}
+.span-label.label-info {
+    background-color: #349E48;
+    border-color: #309142;
+    color: #FFFFFF;
+}
+.span-label.label-danger {
+    background-color: #C2422F;
+    border-color: #B33D2B;
+    color: #FFFFFF;
 }
 
 /* Font size */
