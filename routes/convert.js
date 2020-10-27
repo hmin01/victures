@@ -1,7 +1,12 @@
+const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const router = express.Router();
 // Module
 const video = require('../modules/video');
+const { info } = require('console');
+// Temp path
+const stateDirPath = path.join(__dirname, "../public/temp");
 
 /* Step 1 page */
 router.get('/step/import', (req, res) => {
@@ -20,7 +25,10 @@ router.post('/step/import', async (req, res) => {
     const result = video.parseUrl(url);
     if (result.result) {
         req.session.video = {
-            url: url
+            url: url,
+            state: {
+                download: "yet"
+            }
         };
     }
     // Return
@@ -42,6 +50,7 @@ router.post('/step/info', (req, res) => {
         res.json({result: false, message: "Invalid process flow"});
     } else {
         if (req.session.video.info === undefined || req.session.video.info === null) {
+            // Get video info
             video.getInfo(req.session.video.url, function(result) {
                 if (result.result) {
                     // Calculate duration (convert string)
@@ -85,25 +94,161 @@ router.post('/step/info', (req, res) => {
 });
 
 /* Step 3 page */
-router.get('/step/select', (req, res) => {
+router.get('/step/process', (req, res) => {
     if (req.session.video === undefined || req.session.video.url === undefined) {
         res.redirect(401, '/convert/step/import');
     } else {
-        res.render('convert/select');
+        // Create temp state file
+        if (!fs.existsSync(stateDirPath))
+            fs.mkdirSync(stateDirPath);
+        fs.writeFileSync(path.join(stateDirPath, `state_download_${req.session.video.info.id}`), "yet");
+        fs.writeFileSync(path.join(stateDirPath, `state_extractKeywords_${req.session.video.info.id}`), "yet");
+        fs.writeFileSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.info.id}`), "yet");
+
+        // Render
+        res.render('convert/process');
     }
 });
 
-/* [Step 3] Download video API */
+/* [Step 3.1] Download video API */
 router.post('/step/download', (req, res) => {
     if (req.session.video === undefined || req.session.video.url === undefined) {
         res.json({result: false, message: "Invalid process flow"});
     } else {
-        console.log("r 1");
-        console.log(req.session.video.url);
         video.download(req.session.video.url, function(result) {
-            res.json(result);
+            // Create temp state file
+            if (!fs.existsSync(stateDirPath))
+                fs.mkdirSync(stateDirPath);
+
+            if (result.result) {
+                fs.writeFileSync(path.join(stateDirPath, `state_download_${req.session.video.info.id}`), "success");
+            } else {
+                fs.writeFileSync(path.join(stateDirPath, `state_download_${req.session.video.info.id}`), "fail");
+            }
         });
+
+        res.json({result: true});
     }
-})
+});
+/* Check download state (polling) */
+router.get('/step/state', (req, res) => {
+    if (req.session.video === undefined || req.session.video.url === undefined || req.session.video.state.download === undefined) {
+        res.json({result: false, message: "Invalid process flow"});
+    } else {
+        const type = req.query.type;
+        // Check exist
+        if (!fs.existsSync(stateDirPath) || !fs.existsSync(path.join(stateDirPath, `state_${type}_${req.session.video.info.id}`))) {
+            res.json({result: false, message: "Not found state file"});
+        } else {
+            // Get temp state file
+            const state = fs.readFileSync(path.join(stateDirPath, `state_${type}_${req.session.video.info.id}`)).toString();
+            // Save state in session
+            req.session.video.state[type] = state;
+            // Return
+            res.json({result: true, state: state});
+        }
+    }
+});
+/* Delete download state file */
+router.delete('/step/state', (req, res) => {
+    // Check exist
+    if (fs.existsSync(stateDirPath)
+    && fs.existsSync(path.join(stateDirPath, `state_download_${req.session.video.info.id}`))
+    && fs.existsSync(path.join(stateDirPath, `state_extractKeywords_${req.session.video.info.id}`))
+    && fs.existsSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.info.id}`))) {
+        fs.unlinkSync(path.join(stateDirPath, `state_download_${req.session.video.info.id}`));
+        fs.unlinkSync(path.join(stateDirPath, `state_extractKeywords_${req.session.video.info.id}`));
+        fs.unlinkSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.info.id}`));
+    } else {
+        console.error("Not found state file");
+    }
+    // Return
+    res.json({result: true});
+});
+
+/* [Step 3.2] Extract Keyword from subtitles API */
+router.post('/step/extract/keywords', (req, res) => {
+    if (req.session.video === undefined || req.session.video.url === undefined) {
+        res.json({result: false, message: "Invalid process flow"});
+    } else {
+        video.extractKeywords(req.session.video.info.id, function(result) {
+            // Create temp state file
+            if (!fs.existsSync(stateDirPath))
+                fs.mkdirSync(stateDirPath);
+
+            if (result.result) {
+                fs.writeFileSync(path.join(stateDirPath, `state_extractKeywords_${req.session.video.info.id}`), "success");
+            } else {
+                fs.writeFileSync(path.join(stateDirPath, `state_extractKeywords_${req.session.video.info.id}`), "fail");
+                console.error(result.message);
+            }
+        });
+
+        res.json({result: true});
+    }
+});
+
+/* [Step 3.3] Extract frame from video API */
+router.post('/step/extract/frames', (req, res) => {
+    if (req.session.video === undefined || req.session.video.url === undefined) {
+        res.json({result: false, message: "Invalid process flow"});
+    } else {
+        video.extractFrames(req.session.video.info.id, function(result) {
+            // Create temp state file
+            if (!fs.existsSync(stateDirPath))
+                fs.mkdirSync(stateDirPath);
+
+            if (result.result) {
+                fs.writeFileSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.info.id}`), "success");
+                // // Save extract info
+                // const frameDir = path.join(__dirname, "../public/dist/videos/", req.session.video.info.id, "frames");
+                // if (fs.existsSync(frameDir)) {
+                //     const ls = fs.readdirSync(frameDir);
+                //     req.session.video.frames = {
+                //         dir: frameDir,
+                //         count: ls.length
+                //     };
+                // } else {
+                //     fs.writeFileSync(path.join(stateDirPath, `state_extract_${req.session.video.info.id}`), "fail");
+                //     console.error("extract frames error");
+                // }
+            } else {
+                fs.writeFileSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.info.id}`), "fail");
+                console.error(result.message);
+            }
+        });
+
+        res.json({result: true});
+    }
+});
+
+/* Step 4 page */
+router.get('/step/select', (req, res) => {
+    if (req.session.video === undefined || req.session.video.url === undefined) {
+        res.redirect(401, '/convert/step/import');
+    } else {
+        // Render
+        res.render('convert/select');
+    }
+});
+
+/* [Step 4] Get extracted frames */
+router.get('/step/select/frames', async (req, res) => {
+    if (req.session.video === undefined || req.session.video.url === undefined) {
+        res.json({result: false, message: "Invalid process flow"});
+    } else {
+        // Save extract info
+        const frameDir = path.join(__dirname, "../public/dist/videos/", req.session.video.info.id, "frames");
+        if (fs.existsSync(frameDir)) {
+            const ls = fs.readdirSync(frameDir);
+            const frames = ls.map(function (elem) {
+                return `/source/${req.session.video.info.id}/frames/${elem}`;
+            });
+            res.json({result: true, message: frames});
+        } else {
+            res.json({result: false, message: "Not found this video frames"});
+        }
+    }
+});
 
 module.exports = router;

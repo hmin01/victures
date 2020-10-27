@@ -78,6 +78,15 @@
             .video-content-detail[name="author"] > p:hover {
                 color: #F73B0C;
             }
+            .video-content-detail[name="description"] > p {
+                display: -webkit-box;
+                line-height: 1.2em;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                word-wrap:break-word;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+            }
 
             #loading-info {
                 display: flex;
@@ -295,10 +304,10 @@
                 $('#modal-confirm button[name="next"]').on('click', function() {
                     const duration = $('.video-content-detail[name="duration"]').data('time');
                     console.log(duration);
-                    if (duration > (60 * 25)) {
-                        alert("현재 Beta 버전에서는 영상 길이가 최대 25분인 영상만 지원하고 있습니다.");
+                    if (duration > (60 * 20)) {
+                        alert("현재 Beta 버전에서는 영상 길이가 최대 20분인 영상만 지원하고 있습니다.");
                     } else {
-                        location.href = '/convert/step/select';
+                        location.href = '/convert/step/process';
                     }
                 });
 

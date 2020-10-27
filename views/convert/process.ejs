@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Victures</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <!-- Fontawesome -->
+        <link rel="stylesheet" type="text/css" href="/stylesheets/fontawesome/css/all.min.css">
+        <!-- Public -->
+        <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+        <!-- Convert page -->
+        <link rel="stylesheet" type="text/css" href="/stylesheets/convert-page.css">
+        <!-- Local -->
+        <style type="text/css">
+            .form-step-detail {
+                align-items: center;
+                background-color: #d4edda;
+                border: 1px solid #c3e6cb;
+                border-radius: 0.375rem;
+                color: #155724;
+                display: flex;
+                margin-bottom: 1.5rem;
+                padding: .75rem 1.25rem;
+                position: relative;
+                user-select: none;
+            }
+            .form-step-detail.processing-failed {
+                color: #721c24;
+                background-color: #f8d7da;
+                border-color: #f5c6cb;
+            }
+            .loading-message {
+                display: inline-block;
+                font-size: 16px;
+                font-weight: 500;
+                flex: 1;
+                margin-bottom: 0;
+                padding: 0 0.875rem;
+            }
+            .loading-processing {
+                height: 1.5rem;
+                width: 1.5rem;
+            }
+            .loading-success {
+                align-items: center;
+                display: flex;
+                font-size: 1.45rem;
+            }
+            .loading-failed {
+                align-items: center;
+                display: flex;
+                margin-right: 4px;
+                font-size: 1.55rem;
+            }
+        </style>
+    </head>
+    <body class="basis-background-color">
+        <section class="vic-page">
+            <article class="vic-page-nav container-xl">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <a class="navbar-brand" href="/video">Victure</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item active">
+                                <a class="nav-link" href="/video">List</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/convert">Convert</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Coming soon</a>
+                            </li>
+                        </ul>
+                        <form class="form-search my-2 my-lg-0">
+                            <input class="basis-input input-rounded-sm search-input" type="search" placeholder="Search" aria-label="Search" />
+                            <span class="search-icon"><i class="fas fa-search"></i></span>
+                        </form>
+                    </div>
+                </nav>
+            </article>
+            <article class="vic-page-body container-xl d-flex">
+                <div class="left-side">
+                    <div class="form-step h-65">
+                        <div class="form-step-background"></div>
+                        <span class="label-step success"><i class="fa fa-check"></i></span>
+                        <span class="label-step success"><i class="fa fa-check"></i></span>
+                        <span class="label-step active">3</span>
+                    </div>
+                </div>
+                <div class="right-side">
+                    <div class="form-convert h-65">
+                        <div class="form-input mt-0">
+                            <div class="form-step-detail" data-step="1" data-state="success">
+                                <span class="span-label label-info">Step 1</span>
+                                <p class="loading-message">Video downloading</p>
+                                <span class="spinner-border loading-processing" style="height: 1.5rem; width: 1.5rem;" role="status" aria-hidden="true"></span>
+                                <span class="loading-success d-none"><i class="fas fa-check"></i></span>
+                                <span class="loading-failed d-none"><i class="fas fa-times"></i></span>
+                            </div>
+                            <div class="form-step-detail d-none" data-step="2" data-state="processing">
+                                <span class="span-label label-info">Step 2</span>
+                                <p class="loading-message">Video downloading...</p>
+                                <span class="spinner-border loading-processing" style="height: 1.5rem; width: 1.5rem;" role="status" aria-hidden="true"></span>
+                                <span class="loading-success d-none"><i class="fas fa-check"></i></span>
+                                <span class="loading-failed d-none"><i class="fas fa-times"></i></span>
+                            </div>
+                            <div class="form-step-detail d-none" data-step="3" data-state="processing">
+                                <span class="span-label label-info">Step 3</span>
+                                <p class="loading-message">Video downloading...</p>
+                                <span class="spinner-border loading-processing" style="height: 1.5rem; width: 1.5rem;" role="status" aria-hidden="true"></span>
+                                <span class="loading-success d-none"><i class="fas fa-check"></i></span>
+                                <span class="loading-failed d-none"><i class="fas fa-times"></i></span>
+                            </div>
+                            <div class="form-step-detail d-none mb-0" data-step="4" data-state="processing">
+                                <span class="span-label label-info">Step 4</span>
+                                <p class="loading-message">Extract frames...</p>
+                                <span class="spinner-border loading-processing" style="height: 1.5rem; width: 1.5rem;" role="status" aria-hidden="true"></span>
+                                <span class="loading-success d-none"><i class="fas fa-check"></i></span>
+                                <span class="loading-failed d-none"><i class="fas fa-times"></i></span>
+                            </div>
+                        </div>
+                        <div class="form-button">
+                            <a class="basis-button rounded-sm px-3" name="prev" href="/convert/step/info">Prev</a>
+                            <a class="basis-button rounded-sm px-3 d-none" name="next" href="/convert/step/select">Next</a>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
+        <!-- Bootstrap -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" type="text/javascript"></script>
+        <!-- Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" type="text/javascript"></script>
+        <!-- Public function -->
+        <script src="/javascripts/public-function.js" type="text/javascript"></script>
+        <!-- Local -->
+        <script>
+            // Process
+            processingStep(1, "processing", "Preparing to process...");
+            setTimeout(function() {
+                processingStep(1, "success", "Ready for processing");
+                processingStep(2, "processing", "Downlaoding video...");
+                
+                ps_download(2);
+            }, 1900);
+
+            // Polling process state
+            let pollingState = true;
+            function checkProcessState(index, type) {
+                $.ajax({
+                    type: "GET",
+                    url: "/convert/step/state?type=" + type,
+                    success: function(res) {
+                        if (res.result) {
+                            if (res.state === "success") {
+                                pollingState = false;
+                                if (type === "download") {
+                                    processingStep(index, "success", "Success to download video");
+                                    // Next step (extract)
+                                    processingStep(index + 1, "processing", "Extracting keywords...");
+                                    ps_extractKeywords(index + 1);
+                                } else if (type === "extractKeywords") {
+                                    processingStep(index, "success", "Success to extract keywords");
+                                    // Next step (extract)
+                                    processingStep(index + 1, "processing", "Extracting frames...");
+                                    ps_extractFrames(index + 1);
+                                } else if (type === "extractFrames") {
+                                    processingStep(index, "success", "Success to extract frames");
+                                    // Delete state file
+                                    $.ajax({
+                                        type: "DELETE",
+                                        url: "/convert/step/state",
+                                        success: function(res) {
+                                            if (!res.result) {
+                                                console.error(res.message);
+                                            }
+
+                                            $('.form-button .basis-button[name="next"]').removeClass('d-none');
+                                        }
+                                    });
+                                }
+                            } else if (res.state === "fail") {
+                                pollingState = false;
+                                if (type === "download") {
+                                    processingStep(index, 'fail', "Failed to download video");
+                                } else if (type === "extractKeywords") {
+                                    processingStep(index, 'fail', "Failed to extract keywords");
+                                } else if (type === "extractFrames") {
+                                    processingStep(index, 'fail', "Failed to extract frames");
+                                }
+                            }
+                        } else {
+                            pollingState = false;
+                            console.error(res.message);
+                        }
+                    },
+                    error: function() {
+                        pollingState = false;
+                    },
+                    complete: function() {
+                        if (pollingState) {
+                            setTimeout(function() {checkProcessState(index, type)}, 3000);
+                        }
+                    },
+                    timeout: 3000,
+                    cache: false,
+                });
+            }
+
+            // Download video
+            function ps_download(index) {
+                $.ajax({
+                    type: "POST",
+                    url: "/convert/step/download",
+                    success: function(res) {
+                        if (res.result) {
+                            checkProcessState(index, "download");
+                            pollingState = true;
+                        } else {
+                            alert(res.message);
+                            processingStep(index, 'error', "Failed to download video");
+                        }
+                    },
+                    error: function() {
+                        processingStep(index, 'error', "Failed to download video");
+                    }
+                });
+            }
+
+            // Extract keywords
+            function ps_extractKeywords(index) {
+                $.ajax({
+                    type: "POST",
+                    url: "/convert/step/extract/keywords",
+                    success: function(res) {
+                        if (res.result) {
+                            checkProcessState(index, "extractKeywords");
+                            pollingState = true;
+                        } else {
+                            alert(res.message);
+                            processingStep(index, 'error', "Failed to extract frames");
+                        }
+                    },
+                    error: function() {
+                        processingStep(index, 'error', "Failed to extract frames");
+                    }
+                });
+            }
+
+            // Extract frames
+            function ps_extractFrames(index) {
+                $.ajax({
+                    type: "POST",
+                    url: "/convert/step/extract/frames",
+                    success: function(res) {
+                        if (res.result) {
+                            checkProcessState(index, "extractFrames");
+                            pollingState = true;
+                        } else {
+                            alert(res.message);
+                            processingStep(index, 'error', "Failed to extract frames");
+                        }
+                    },
+                    error: function() {
+                        processingStep(index, 'error', "Failed to extract frames");
+                    }
+                });
+            }
+
+            // step processing function
+            function processingStep(step, state="processing", message="") {
+                const $stepForm = $(`.form-step-detail[data-step="${step}"]`);
+                ($stepForm.find('.loading-message')).text(message);
+
+                if (state === "processing") {
+                    $stepForm.data('state', 'processing');
+                    ($stepForm.find('.loading-processing')).removeClass('d-none');
+                    ($stepForm.find('.loading-success')).addClass('d-none');
+                    ($stepForm.find('.loading-failed')).addClass('d-none');
+
+                    ($stepForm.find('.span-label')).addClass('label-info');
+                    ($stepForm.find('.span-label')).removeClass('label-danger');
+
+                    $stepForm.removeClass('d-none');
+                } else if (state === "success") {
+                    $stepForm.data('state', 'success');
+                    ($stepForm.find('.loading-processing')).addClass('d-none');
+                    ($stepForm.find('.loading-success')).removeClass('d-none');
+                    ($stepForm.find('.loading-failed')).addClass('d-none');
+
+                    ($stepForm.find('.span-label')).addClass('label-info');
+                    ($stepForm.find('.span-label')).removeClass('label-danger');
+                } else if (state === "fail") {
+                    $stepForm.data('state', 'fail');
+                    $stepForm.addClass('processing-failed');
+                    ($stepForm.find('.loading-processing')).addClass('d-none');
+                    ($stepForm.find('.loading-success')).addClass('d-none');
+                    ($stepForm.find('.loading-failed')).removeClass('d-none');
+
+                    ($stepForm.find('.span-label')).removeClass('label-info');
+                    ($stepForm.find('.span-label')).addClass('label-danger');
+                }
+            }
+        </script>
+    </body>
+</html>

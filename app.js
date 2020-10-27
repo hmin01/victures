@@ -29,6 +29,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/thumbnail', express.static(path.join(__dirname, '/public/images/thumbnail')));
+app.use('/source', express.static(path.join(__dirname, '/public/dist/videos')));
+
 // Append router
 app.use('/', indexRouter);
 app.use('/user', userRouter);
