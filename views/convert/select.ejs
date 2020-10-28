@@ -12,88 +12,115 @@
         <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
         <!-- Convert page -->
         <link rel="stylesheet" type="text/css" href="/stylesheets/convert-page.css">
+        <!-- Custom alert -->
+        <link rel="stylesheet" type="text/css" href="/stylesheets/alerts-css.css">
         <!-- Local -->
         <style type="text/css">
-            .form-slider {
-                align-items: center;
+            .extract-info {
                 display: flex;
-                position: relative;
-                width: 100%;
             }
-            .slide-card {
-                display: none;
-                position: relative;
-            }
-            .slide-card .check {
-                background-color: #212121BB;
-                border-radius: 50%;
-                color: #616161;
-                cursor: pointer;
-                font-size: 16px;
-                right: 15px;
-                padding: 12px 12px 10px 12px;
-                position: absolute;
-                top: 15px;
-                transition: background-color 0.4s, color 0.4s;
-                z-index: 10;
-            }
-            .slide-card .check:hover {
-                background-color: #A1A1A1BB;
-            }
-            .slide-card .check.selected {
-                background-color: #F3D00BD8;
-            }
-            .slide-card .frame {
-                width: 100%;
-            }
-            .slide-card.show {
-                display: block;
-            }
-            .slide-button {
+            .info-card {
                 align-items: center;
-                color: #FFFFFF;
-                cursor: pointer;
+                background-color: #F0FCF9;
+                border: 1px solid #D6D9DB;
+                border-radius: 0.375rem;
                 display: flex;
-                font-size: 18px;
+                justify-content: space-between;
+                margin-bottom: 1.125rem;
+                padding: 0.625rem 0.875rem;
+            }
+            .info-card > h5 {
+                font-size: 14px;
+                font-weight: 600;
+                margin-bottom: 0;
+                text-align: center;
+            }
+            .info-card > .form-label > label {
+                color: #878787;
+                font-size: 14px;
+                margin-bottom: 0;
+            }
+            #selected-frame-count {
+                color: #3FA648;
                 font-weight: 800;
-                height: 70%;
-                padding: 0 1.5rem;
-                position: absolute;
-                transition: background-color 0.4s ease;
-                text-decoration: none;
-                user-select: none;
-                z-index: 5;
-            }
-            .slide-button:hover {
-                background-color: #00000065;
-                color: #FFFFFF;
-                text-decoration: none;
-            }
-            .slide-button[name="prev"] {
-                border-top-right-radius: 0.375rem;
-                border-bottom-right-radius: 0.375rem;
-                left: 0;
-            }
-            .slide-button[name="next"] {
-                border-top-left-radius: 0.375rem;
-                border-bottom-left-radius: 0.375rem;
-                right: 0;
             }
 
-            /* Fading animation */
-            .fade-slide {
-                -webkit-animation-name: fade;
-                -webkit-animation-duration: 1.5s;
-                animation-name: fade;
-                animation-duration: 1.5s;
+            .form-frames {
+                display: flex;
             }
-            @-webkit-keyframes fade {
-                from {opacity: .4}
-                to {opacity: 1}
+            .frame-card {
+                border: 1px solid #DADADA;
+                margin-bottom: 1.5rem;
+                width: 100%;
             }
-            @keyframes fade {
-                from {opacity: .4}
-                to {opacity: 1}
+            .frame-card .frame {
+                width: 100%;
+            }
+            .frame-card .frame-info {
+                display: flex;
+            }
+            .frame-card .frame-info > span {
+                flex: 33.333%;
+                text-align: center;
+                padding: 0.625rem;
+                user-select: none;
+                width: 33.333%;
+            }
+            .frame-card .frame-info > .detail,
+            .frame-card .frame-info > .check {
+                cursor: pointer;
+                transition: color 0.25s ease;
+            }
+            .frame-card .frame-info > .check {
+                color: #CBCBCB;
+            }
+            .frame-card .frame-info > .check.selected {
+                color: #E88502;
+            }
+            .frame-card .frame-info > .check:hover {
+                color: #FFAF0A;
+            }
+
+            .modal-backdrop {
+                opacity: 0.825 !important;
+            }
+            .modal-dialog {
+                width: 980px;
+                max-width: 1180px;
+            }
+            .modal-content {
+                position: relative;
+                width: 100%;
+                background-color: transparent;
+                border: none;
+                outline: 0;
+            }
+            .frame-detail-card-bg {
+                align-items: center;
+                display: flex;
+                height: 100%;
+                justify-content: center;
+                width: 100%;
+            }
+            .frame-detail-card {
+                position: relative;
+                width: 980px;
+            }
+            .frame-detail-card .frame {
+                border-top-left-radius: 0.375rem;
+                border-top-right-radius: 0.375rem;
+            }
+            .frame-detail-card .frame-content {
+                background-color: #EFEFEF;
+                border-bottom-left-radius: 0.375rem;
+                border-bottom-right-radius: 0.375rem;
+                color: #3B3B3B;
+                font-size: 16px;
+                text-align: center;
+                padding: 1rem 1.375rem;
+            }
+            .frame-detail-card .frame-content > .subtitle {
+                margin-bottom: 0;
             }
         </style>
     </head>
@@ -125,21 +152,43 @@
                 </nav>
             </article>
             <article class="vic-page-body container-xl">
-                <div class="form-slider">
-                    <a class="slide-button" name="prev"><i class="fa fa-2x fa-chevron-left"></i></a>
-                    <a class="slide-button" name="next"><i class="fa fa-2x fa-chevron-right"></i></a>
-                </div>
-                <div>
-                    <div class="form-frames mt-0">
-                        <div>추출된 Frame 갯수: <label id="frame-count"></label></div>
+                <div class="fixed-alerts fixed-alerts_top fixed-alerts_right" id="form-alert"></div>
+                <div style="padding: 0 1rem;">
+                    <div class="extract-info row">
+                        <div class="col-lg-6">
+                            <div class="info-card">
+                                <h5>Extracted frames</h5>
+                                <div class="form-label">
+                                    <label id="selected-frame-count"></label>
+                                    <label>/</label>
+                                    <label id="total-frame-count"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-button">
+                                <button type="button" class="basis-button rounded-sm">Confirm</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-button">
-                        <a class="basis-button rounded-sm px-3" name="prev" href="/convert/step/process">Prev</a>
-                        <a class="basis-button rounded-sm px-3 d-none" name="next" id="btn-step-next">Next</a>
+                    <div class="form-frames row">
                     </div>
                 </div>
             </article>
         </section>
+
+        <!-- Modal (detail frame info) -->
+        <div class="modal" id="modal-detail" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content frame-detail-card">
+                    <img class="frame" src="/source/yak2Jg2vtgs/frames/frame_13.png" width="100%"/>
+                    <div class="frame-content">
+                        <p class="subtitle"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- jQuery -->
         <script src="https://code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
@@ -149,25 +198,38 @@
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" type="text/javascript"></script>
         <!-- Public function -->
         <script src="/javascripts/public-function.js" type="text/javascript"></script>
+        <!-- Custom alert -->
+        <script src="/javascripts/alerts.js" type="text/javascript"></script>
         <!-- Local -->
         <script>
+            let FRAMES_DATA = null;
+
             // Get frames
             $.ajax({
                 type: "GET",
                 url: "/convert/step/select/frames",
                 success: function(res) {
                     if (res.result) {
-                        $('#frame-count').text(res.message.length);
+                        $('#total-frame-count').text(res.frames.length);
+                        $('#selected-frame-count').text(res.frames.length);
 
-                        let index = 0;
-                        for (const elem of res.message) {
-                            let slide;
-                            if (index === 0) {
-                                slide = `<div class="slide-card fade-slide show" data-index="${index}"><span class="slide-count"></span><span class="check"><i class="fa fa-check"></i></span><img class="frame" src="${elem}"><div class="subtitle"></div></div>`;
-                            } else {
-                                slide = `<div class="slide-card fade-slide" data-index="${index}"><span class="slide-count"></span><span class="check"><i class="fa fa-check"></i></span><img class="frame" src="${elem}"><div class="subtitle"></div></div>`;
-                            }
-                            $('.form-slider').append(slide);
+                        FRAMES_DATA = res.data;
+                        console.log(FRAMES_DATA)
+
+                        let index = 1;
+                        for (const elem of res.frames) {
+                            const slide =   `<div class="col-lg-3 col-sm-4" style="position: relative;">
+                                                <div class="frame-card">
+                                                    <img class="frame" data-index="${index}" src="${elem}">
+                                                    <div class="frame-info" data-index="${index}">
+                                                        <span>${index}</span>
+                                                        <span class="detail"><i class="far fa-closed-captioning"></i></span>
+                                                        <span class="check selected"><i class="fa fa-check"></i></span>
+                                                    </div>
+                                                </div>
+                                            </div>`;
+
+                            $('.form-frames').append(slide);
                             index++;
                         }
                     } else {
@@ -176,46 +238,31 @@
                 }
             });
 
-            // Select frame
-            $(document).on('click', '.slide-card .check', function() {
-                if ($(this).hasClass('selected')) {
-                    $(this).removeClass('selected');
+            // Selected frame
+            $(document).on('click', '.frame-card .check', function() {
+                const $this = $(this);
+                const index = $this.parent().data('index');
+                if ($this.hasClass('selected')) {
+                    $this.removeClass('selected');
+                    customAlert('default', `Unselect frames (index: ${index})`, 3000);
                 } else {
-                    $(this).addClass('selected');
+                    $this.addClass('selected');
+                    customAlert('default', `Select frames (index: ${index})`, 3000);
                 }
+
+                const selected = document.querySelectorAll('.check.selected').length;
+                $('#selected-frame-count').text(selected);
             });
 
-            // Index
-            let currentSlideIndex = 0;
-            // Prev slide
-            $('.slide-button[name="prev"]').on('click', function() {
-                showSlides(currentSlideIndex -= 1);
+            // Get subtitle
+            $(document).on('click', '.frame-card .detail', function() {
+                const index = $(this).parent().data('index');
+                // Set detail modal
+                document.querySelector('#modal-detail .frame').src = document.querySelector(`.frame-card .frame[data-index="${index}"]`).src;
+                document.querySelector('#modal-detail .subtitle').textContent = FRAMES_DATA[index].sentence;
+
+                $('#modal-detail').modal('show');
             });
-            // Next slide
-            $('.slide-button[name="next"]').on('click', function() {
-                showSlides(currentSlideIndex += 1);
-            });
-            // Slide function
-            function showSlides(n) {
-                // move slide
-                const slides = document.querySelectorAll(".slide-card");
-                if (n > slides.length - 1) {
-                    currentSlideIndex = 0;
-                } else if (n < 0) {
-                    currentSlideIndex = slides.length - 1;
-                }
-                for (const slide of slides) {
-                    $(slide).removeClass('show');
-                }
-                $(document.querySelector(`.slide-card[data-index="${currentSlideIndex}"]`)).addClass('show');
-                // move dot
-                // var dots = document.getElementsByClassName("dot");
-                // for (i = 0; i < dots.length; i++) {
-                //     dots[i].className = dots[i].className.replace(" active", "");
-                // }
-                // slides[slideIndex-1].style.display = "block";
-                // dots[slideIndex-1].className += " active";
-            }
         </script>
     </body>
 </html>

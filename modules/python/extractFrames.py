@@ -1,7 +1,7 @@
 import os
 import sys
 import srt
-import pickle
+import json
 import subprocess
 
 from kiwipiepy import Kiwi
@@ -29,18 +29,27 @@ else:
     else:
         VIDEO_ID = sys.argv[1][:idx]
         EXTENSION = sys.argv[1][idx:]
-
-        KEYWORDS_FILE = os.path.join(CURRENT_PATH, f'./src/keywords_{VIDEO_ID}.txt')
-        OPTIONES_FILE = os.path.join(CURRENT_PATH, f'./src/options_{VIDEO_ID}.txt')
+        ## set temp file path
+        TEMP_FILE = os.path.join(CURRENT_PATH, f'./src/temp_{VIDEO_ID}.txt')
+        ## set options and keywords file path
+        dataDirPath = os.path.join(SOURCE_DIR, f'{VIDEO_ID}/data/')
+        if os.path.isdir(dataDirPath) == False:
+            exit(4)
+        else:
+            KEYWORDS_FILE = os.path.join(dataDirPath, f'./keywords_{VIDEO_ID}.json')
+            OPTIONES_FILE = os.path.join(dataDirPath, f'./options_{VIDEO_ID}.json')
+        del dataDirPath
 
 # [Step 1] Read file
 subtitleFile = os.path.join(SOURCE_DIR, f'{VIDEO_ID}/{VIDEO_ID}.ko.srt')
 file = open(subtitleFile)
-del subtitleFile
 
 # [Step 2] Parse '.srt' and general subtitles
 srtFile = srt.parse(file)
 subtitles = list(srtFile)
+file.close()
+del subtitleFile
+del file
 
 # [Step 4.1] Create kiwipy
 machine = Kiwi()
@@ -50,8 +59,8 @@ machine.load_user_dictionary(DICTIONARY_PATH)
 machine.prepare()
 
 # [Step 5] Load analyzed data
-file = open(OPTIONES_FILE, 'rb')
-finalData = pickle.load(file)
+with open(OPTIONES_FILE, 'r', encoding='utf-8') as file:
+    finalData = json.load(file)
 del file
 
 # [Step 6.1] Check output directory existence
@@ -61,11 +70,9 @@ if (os.path.isdir(outputDir) == False):
 # [Step 6.2] Generate args to extract frame
 source = f'{SOURCE_DIR}{VIDEO_ID}/{VIDEO_ID}{EXTENSION}'
 output = f'{outputDir}frame_%d.png'
-## sort by asc
-sortedFinalData = sorted(finalData, key=lambda x: x['frameIndex'])
 ## generate filter agrs
 filterArgs = 'select='
-for i, elem in enumerate(sortedFinalData):
+for i, elem in enumerate(finalData):
     fI = elem['frameIndex']
     filterArgs += f"'eq(n,{fI})'"
     if i < len(finalData) - 1:

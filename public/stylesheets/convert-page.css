@@ -42,6 +42,7 @@
     font-weight: 900;
     height: 42px;
     justify-content: center;
+    line-height: 1;
     width: 42px;
     vertical-align: middle;
     user-select: none;
@@ -51,7 +52,8 @@
     color: #FFFFFF;
 }
 .label-step.finish {
-    background-color: #F7E8D5;
+    /* background-color: #F7E8D5; */
+    background-color: #FFFFFF;
 }
 .form-convert {
     display: flex;

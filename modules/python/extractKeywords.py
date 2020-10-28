@@ -1,7 +1,7 @@
 import os
 import sys
 import srt
-import pickle
+import json
 
 from kiwipiepy import Kiwi
 from IOHandler import IOHandler
@@ -29,29 +29,33 @@ else:
     else:
         VIDEO_ID = sys.argv[1][:idx]
         EXTENSION = sys.argv[1][idx:]
-
+        ## set temp file path
         TEMP_FILE = os.path.join(CURRENT_PATH, f'./src/temp_{VIDEO_ID}.txt')
-        KEYWORDS_FILE = os.path.join(CURRENT_PATH, f'./src/keywords_{VIDEO_ID}.txt')
-        OPTIONES_FILE = os.path.join(CURRENT_PATH, f'./src/options_{VIDEO_ID}.txt')
+        ## set options and keywords file path
+        dataDirPath = os.path.join(SOURCE_DIR, f'{VIDEO_ID}/data/')
+        if os.path.isdir(dataDirPath) == False:
+            os.mkdir(dataDirPath)
+        KEYWORDS_FILE = os.path.join(dataDirPath, f'./keywords_{VIDEO_ID}.json')
+        OPTIONES_FILE = os.path.join(dataDirPath, f'./options_{VIDEO_ID}.json')
+        del dataDirPath
 
 # [Step 1] Read file
 subtitleFile = os.path.join(SOURCE_DIR, f'{VIDEO_ID}/{VIDEO_ID}.ko.srt')
 file = open(subtitleFile)
-del subtitleFile
 
 # [Step 2] Parse '.srt' and general subtitles
 srtFile = srt.parse(file)
 subtitles = list(srtFile)
+file.close()
+del subtitleFile
 del file
 
-# [Step 3.1] Create temp file
-file = open(TEMP_FILE, 'w')
-# [Step 3.2] Extract sentences and save sentences in temp file
+# [Step 3] Extract sentences and save sentences in temp file
 sentences = []
-for elem in subtitles:
-    sentences.append(elem.content)
-    file.write(elem.content)
-file.close()
+with open(TEMP_FILE, 'w') as file:
+    for elem in subtitles:
+        sentences.append(elem.content)
+        file.write(elem.content)
 del file
 
 # [Step 4.1] Create kiwipy
@@ -72,6 +76,7 @@ words = machine.extract_add_words(file.read, 8)
 for elem in words:
     dictionary.write(f'{elem[0]}\tNNG\n')
 dictionary.close()
+file.file.close()
 del words
 del file
 # [Step 4.6] Delete temp file
@@ -107,8 +112,8 @@ keywords = dict(sortedWords[:end])
 del end
 del sortedWords
 # [Step 5.5] Save keywords and analysis data
-file = open(KEYWORDS_FILE, 'wb')
-pickle.dump(keywords, file)
+with open(KEYWORDS_FILE, 'w', encoding='utf-8') as file:
+    json.dump(keywords, file, ensure_ascii=False)
 del file
 
 # [Step 6.1] Analysis subtitls
@@ -125,21 +130,24 @@ for sentence in subtitles:
             score += keywords[elem[0]]
     ## save analysis result
     time = (sentence.end - sentence.start) * 0.9 + sentence.start
-    analyzedSentences.append({'index': sentence.index, 'frameIndex': round((time.seconds + (time.microseconds / 1000000)) * 30), 'time': time,  'score': score})
+    analyzedSentences.append({'frameIndex': round((time.seconds + (time.microseconds / 1000000)) * 30), 'start': str(sentence.start), 'end': str(sentence.end), 'time': str(time), 'score': score, 'sentence': sentence.content})
 # [Step 6.2] sort Analyzed data
 sortedAnalyzedSentences = sorted(analyzedSentences, key=lambda x: x['score'], reverse=True)
 # [Step 6.3] Extract analyzed data (total sentences count 50%)
 end = round((len(subtitles) * 50))
 finalData = sortedAnalyzedSentences[:end]
+# [Step 6.4] Sort by timestamp
+sortedFinalData = sorted(finalData, key=lambda x: x['frameIndex'])
 ## clear variable
 del end
 del analyzedSentences
 del subtitles
 del machine
 del keywords
+del finalData
 # [Step 6.4] Save analyzed data
-file = open(OPTIONES_FILE, 'wb')
-pickle.dump(finalData, file)
+with open(OPTIONES_FILE, 'w', encoding='utf-8') as file:
+    json.dump(sortedFinalData, file, ensure_ascii=False)
 del file
 
 # Exit

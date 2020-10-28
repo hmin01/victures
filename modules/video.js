@@ -116,6 +116,15 @@ module.exports = {
                 if (videoFile !== null) {
                     const pythonExe = path.join(PYTHON_DIR, '/extractKeywords.py');
                     const python = childProc.spawn('python3', [pythonExe, videoFile], {cwd: PYTHON_DIR});
+                    python.stdout.on('data', function(data) {
+                        console.log('stdout: ' + data);
+                    });
+                    python.stderr.on('data', function(data) {
+                        console.log('stderr: ' + data);
+                    });
+                    python.on('exit', function(code) {
+                        console.log('exit: ' + code);
+                    });
                     python.on('close', (code) => {
                         console.info(`pythone exit code: ${code}`);
                         if (code === 0) {
@@ -176,6 +185,21 @@ module.exports = {
             }
         } catch (err) {
             callback({result: false, message: err.message});
+        }
+    },
+    getSubtitles: async function(videoID) {
+        try {
+            // Check video existence
+            const filePath = path.join(VIDEO_DIR, videoID);
+            if (fs.existsSync(filePath)) {
+                const rawData = fs.readFileSync(path.join(filePath, `data/options_${videoID}.json`)).toString();
+                const options = JSON.parse(rawData);
+                return {result: true, message: options};
+            } else {
+                return {result: false, message: `Not found video directory (ID: ${videoID})`};
+            }
+        } catch (err) {
+            return {result: false, message: err.meesage};
         }
     }
 };

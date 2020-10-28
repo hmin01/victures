@@ -240,11 +240,18 @@ router.get('/step/select/frames', async (req, res) => {
         // Save extract info
         const frameDir = path.join(__dirname, "../public/dist/videos/", req.session.video.info.id, "frames");
         if (fs.existsSync(frameDir)) {
-            const ls = fs.readdirSync(frameDir);
-            const frames = ls.map(function (elem) {
-                return `/source/${req.session.video.info.id}/frames/${elem}`;
-            });
-            res.json({result: true, message: frames});
+            // Get subtitle
+            const result = await video.getSubtitles(req.session.video.info.id);
+            if (result.result) {
+                // Get frames
+                const ls = fs.readdirSync(frameDir);
+                const frames = ls.map(function (elem) {
+                    return `/source/${req.session.video.info.id}/frames/${elem}`;
+                });
+                res.json({result: true, data: result.message, frames: frames});
+            } else {
+                res.json({result: false, message: result.message});
+            }
         } else {
             res.json({result: false, message: "Not found this video frames"});
         }
