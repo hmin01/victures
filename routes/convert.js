@@ -246,8 +246,17 @@ router.get('/step/select/frames', async (req, res) => {
                 // Get frames
                 const ls = fs.readdirSync(frameDir);
                 const frames = ls.map(function (elem) {
-                    return `/source/${req.session.video.info.id}/frames/${elem}`;
+                    const index = (elem.replace("frame_", "").split('.'))[0];
+                    return {
+                        seq: Number(index),
+                        url: `/source/${req.session.video.info.id}/frames/${elem}`
+                    };
                 });
+                // Sort frames by index
+                frames.sort(function(a, b) {
+                    return a.seq > b.seq ? 1 : a.seq < b.seq ? -1 : 0;
+                });
+                console.log(frames);
                 res.json({result: true, data: result.message, frames: frames});
             } else {
                 res.json({result: false, message: result.message});

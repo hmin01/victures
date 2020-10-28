@@ -220,7 +220,7 @@
                         for (const elem of res.frames) {
                             const slide =   `<div class="col-lg-3 col-sm-4" style="position: relative;">
                                                 <div class="frame-card">
-                                                    <img class="frame" data-index="${index}" src="${elem}">
+                                                    <img class="frame" data-index="${index}" src="${elem.url}">
                                                     <div class="frame-info" data-index="${index}">
                                                         <span>${index}</span>
                                                         <span class="detail"><i class="far fa-closed-captioning"></i></span>
@@ -259,7 +259,7 @@
                 const index = $(this).parent().data('index');
                 // Set detail modal
                 document.querySelector('#modal-detail .frame').src = document.querySelector(`.frame-card .frame[data-index="${index}"]`).src;
-                document.querySelector('#modal-detail .subtitle').textContent = FRAMES_DATA[index].sentence;
+                document.querySelector('#modal-detail .subtitle').textContent = FRAMES_DATA[index - 1].sentence;
 
                 $('#modal-detail').modal('show');
             });

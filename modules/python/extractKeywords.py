@@ -129,12 +129,12 @@ for sentence in subtitles:
         if elem[1] in POS_LIST and elem[0] in keywords.keys():
             score += keywords[elem[0]]
     ## save analysis result
-    time = (sentence.end - sentence.start) * 0.9 + sentence.start
+    time = (sentence.end - sentence.start) * 0.8 + sentence.start
     analyzedSentences.append({'frameIndex': round((time.seconds + (time.microseconds / 1000000)) * 30), 'start': str(sentence.start), 'end': str(sentence.end), 'time': str(time), 'score': score, 'sentence': sentence.content})
 # [Step 6.2] sort Analyzed data
 sortedAnalyzedSentences = sorted(analyzedSentences, key=lambda x: x['score'], reverse=True)
 # [Step 6.3] Extract analyzed data (total sentences count 50%)
-end = round((len(subtitles) * 50))
+end = round((len(subtitles) * 0.5))
 finalData = sortedAnalyzedSentences[:end]
 # [Step 6.4] Sort by timestamp
 sortedFinalData = sorted(finalData, key=lambda x: x['frameIndex'])
