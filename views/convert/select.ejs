@@ -106,9 +106,19 @@
                 position: relative;
                 width: 980px;
             }
-            .frame-detail-card .frame {
+            .frame-detail-card .form-slider {
+                align-items: center;
+                display: flex;
+                position: relative;
+                width: 100%;
+            }
+            .frame-detail-card .form-slider .frame {
                 border-top-left-radius: 0.375rem;
                 border-top-right-radius: 0.375rem;
+                display: none;
+            }
+            .frame-detail-card .form-slider .frame.show {
+                display: block;
             }
             .frame-detail-card .frame-content {
                 background-color: #EFEFEF;
@@ -121,6 +131,52 @@
             }
             .frame-detail-card .frame-content > .subtitle {
                 margin-bottom: 0;
+            }
+            /* Slide button */
+            .slide-button {
+                align-items: center;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: flex;
+                font-size: 18px;
+                font-weight: 800;
+                height: 70%;
+                padding: 0 1.5rem;
+                position: absolute;
+                transition: background-color 0.4s ease;
+                text-decoration: none;
+                user-select: none;
+                z-index: 5;
+            }
+            .slide-button:hover {
+                background-color: #00000065;
+                color: #FFFFFF;
+                text-decoration: none;
+            }
+            .slide-button[name="prev"] {
+                border-top-right-radius: 0.375rem;
+                border-bottom-right-radius: 0.375rem;
+                left: 0;
+            }
+            .slide-button[name="next"] {
+                border-top-left-radius: 0.375rem;
+                border-bottom-left-radius: 0.375rem;
+                right: 0;
+            }
+            /* Fading animation */
+            .fade-slide {
+                -webkit-animation-name: fade;
+                -webkit-animation-duration: 0.65s;
+                animation-name: fade;
+                animation-duration: 0.65s;
+            }
+            @-webkit-keyframes fade {
+                from {opacity: .65}
+                to {opacity: 1}
+            }
+            @keyframes fade {
+                from {opacity: .65}
+                to {opacity: 1}
             }
         </style>
     </head>
@@ -181,7 +237,10 @@
         <div class="modal" id="modal-detail" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content frame-detail-card">
-                    <img class="frame" src="/source/yak2Jg2vtgs/frames/frame_13.png" width="100%"/>
+                    <div class="form-slider">
+                        <a class="slide-button" name="prev"><i class="fa fa-2x fa-chevron-left"></i></a>
+                        <a class="slide-button" name="next"><i class="fa fa-2x fa-chevron-right"></i></a>
+                    </div>
                     <div class="frame-content">
                         <p class="subtitle"></p>
                     </div>
@@ -218,7 +277,7 @@
 
                         let index = 1;
                         for (const elem of res.frames) {
-                            const slide =   `<div class="col-lg-3 col-sm-4" style="position: relative;">
+                            const frame =   `<div class="col-lg-3 col-sm-4" style="position: relative;">
                                                 <div class="frame-card">
                                                     <img class="frame" data-index="${index}" src="${elem.url}">
                                                     <div class="frame-info" data-index="${index}">
@@ -229,7 +288,14 @@
                                                 </div>
                                             </div>`;
 
-                            $('.form-frames').append(slide);
+                            $('.form-frames').append(frame);
+                            
+                            let slide = `<img class="frame fade-slide show" src="${elem.url}" data-index=${index} width="100%"/>`;
+                            if (index !== 1) {
+                                slide = `<img class="frame fade-slide" src="${elem.url}" data-index=${index} width="100%"/>`;
+                            }
+                            $('#modal-detail .form-slider').append(slide);
+
                             index++;
                         }
                     } else {
@@ -254,14 +320,40 @@
                 $('#selected-frame-count').text(selected);
             });
 
+            // Index
+            let currentSlideIndex = 0;
+            // Slide function
+            function showSlides(n) {
+                // move slide
+                const slides = document.querySelectorAll(".form-slider .frame");
+                if (n > slides.length) {
+                    currentSlideIndex = 1;
+                } else if (n < 1) {
+                    currentSlideIndex = slides.length;
+                } else {
+                    currentSlideIndex = n;
+                }
+                for (const slide of slides) {
+                    $(slide).removeClass('show');
+                }
+                $(document.querySelector(`.form-slider .frame[data-index="${currentSlideIndex}"]`)).addClass('show');
+                document.querySelector('#modal-detail .subtitle').textContent = FRAMES_DATA[currentSlideIndex - 1].sentence;
+            }
             // Get subtitle
             $(document).on('click', '.frame-card .detail', function() {
-                const index = $(this).parent().data('index');
+                currentSlideIndex = $(this).parent().data('index');
                 // Set detail modal
-                document.querySelector('#modal-detail .frame').src = document.querySelector(`.frame-card .frame[data-index="${index}"]`).src;
-                document.querySelector('#modal-detail .subtitle').textContent = FRAMES_DATA[index - 1].sentence;
-
+                showSlides(currentSlideIndex);
+                // Show detail modal
                 $('#modal-detail').modal('show');
+            });
+            // Prev slide
+            $('.slide-button[name="prev"]').on('click', function() {
+                showSlides(currentSlideIndex -= 1);
+            });
+            // Next slide
+            $('.slide-button[name="next"]').on('click', function() {
+                showSlides(currentSlideIndex += 1);
             });
         </script>
     </body>
