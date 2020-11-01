@@ -41,15 +41,15 @@ else:
         del dataDirPath
 
 # [Step 1] Read file
-subtitleFile = os.path.join(SOURCE_DIR, f'{VIDEO_ID}/{VIDEO_ID}.ko.srt')
-file = open(subtitleFile)
+# subtitleFile = os.path.join(SOURCE_DIR, f'{VIDEO_ID}/{VIDEO_ID}.ko.srt')
+# file = open(subtitleFile)
 
 # [Step 2] Parse '.srt' and general subtitles
-srtFile = srt.parse(file)
-subtitles = list(srtFile)
-file.close()
-del subtitleFile
-del file
+# srtFile = srt.parse(file)
+# subtitles = list(srtFile)
+# file.close()
+# del subtitleFile
+# del file
 
 # [Step 4.1] Create kiwipy
 machine = Kiwi()

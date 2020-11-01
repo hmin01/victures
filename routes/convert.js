@@ -171,7 +171,7 @@ router.post('/step/extract/keywords', (req, res) => {
     if (req.session.video === undefined || req.session.video.url === undefined) {
         res.json({result: false, message: "Invalid process flow"});
     } else {
-        video.extractKeywords(req.session.video.info.id, function(result) {
+        video.extractKeywords(req.session.video.info, function(result) {
             // Create temp state file
             if (!fs.existsSync(stateDirPath))
                 fs.mkdirSync(stateDirPath);

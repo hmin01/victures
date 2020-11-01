@@ -5,6 +5,7 @@ import json
 
 from kiwipiepy import Kiwi
 from IOHandler import IOHandler
+from extractSubtitle import extractSubtitle
 ## pos list
 POS_LIST = ["NNG", "NR"]
 ## current work path (/modules/python)
@@ -20,15 +21,15 @@ VIDEO_ID = None
 EXTENSION = None
 
 # [Step 0] check argv
-if len(sys.argv) != 2:
+if len(sys.argv) != 3:
     exit(2)
 else:
-    idx = sys.argv[1].rfind('.')
+    idx = sys.argv[2].rfind('.')
     if (idx == -1):
         exit(3)
     else:
-        VIDEO_ID = sys.argv[1][:idx]
-        EXTENSION = sys.argv[1][idx:]
+        VIDEO_ID = sys.argv[2][:idx]
+        EXTENSION = sys.argv[2][idx:]
         ## set temp file path
         TEMP_FILE = os.path.join(CURRENT_PATH, f'./src/temp_{VIDEO_ID}.txt')
         ## set options and keywords file path
@@ -41,14 +42,19 @@ else:
 
 # [Step 1] Read file
 subtitleFile = os.path.join(SOURCE_DIR, f'{VIDEO_ID}/{VIDEO_ID}.ko.srt')
-file = open(subtitleFile)
 
 # [Step 2] Parse '.srt' and general subtitles
-srtFile = srt.parse(file)
-subtitles = list(srtFile)
-file.close()
+subtitle = None
+print(sys.argv[1])
+if sys.argv[1] == "True":
+    print("here1")
+    subtitles = extractSubtitle(subtitleFile)
+else:
+    print("here2")
+    with open(subtitleFile) as file:
+        srtFile = srt.parse(file)
+        subtitles = list(srtFile)
 del subtitleFile
-del file
 
 # [Step 3] Extract sentences and save sentences in temp file
 sentences = []

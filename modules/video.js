@@ -99,10 +99,10 @@ module.exports = {
             callback({result: false, message: err.message});
         }
     },
-    extractKeywords: function(videoID, callback) {
+    extractKeywords: function(videoInfo, callback) {
         try {
             // Check video existence
-            const filePath = path.join(VIDEO_DIR, videoID);
+            const filePath = path.join(VIDEO_DIR, videoInfo.id);
             if (fs.existsSync(filePath)) {
                 let videoFile = null;
                 const list = fs.readdirSync(filePath);
@@ -115,7 +115,13 @@ module.exports = {
 
                 if (videoFile !== null) {
                     const pythonExe = path.join(PYTHON_DIR, '/extractKeywords.py');
-                    const python = childProc.spawn('python3', [pythonExe, videoFile], {cwd: PYTHON_DIR});
+                    // Check news category (conbination sentence 여부)
+                    let extractSents = "False";
+                    for (const elem of videoInfo.categories) {
+                        if (elem.toLowerCase().indexOf('news') !== -1) extractSents = "True";
+                    }
+                    // Child process
+                    const python = childProc.spawn('python3', [pythonExe, extractSents, videoFile], {cwd: PYTHON_DIR});
                     python.stdout.on('data', function(data) {
                         console.log('stdout: ' + data);
                     });
