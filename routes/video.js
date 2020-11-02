@@ -34,7 +34,6 @@ router.get('/pictures/list', async function(req, res) {
 
     let frames = [], subtitles = []
     let selectResult = await videoDB.getFrames(videoID);
-    console.log(selectResult)
     if (selectResult.result) {
         frames = selectResult.message;
     } else {
@@ -43,7 +42,6 @@ router.get('/pictures/list', async function(req, res) {
     }
 
     selectResult = await videoDB.getSubtitles(videoID);
-    console.log(selectResult)
     if (selectResult.result) {
         let index = 0;
         for (const elem of frames) {

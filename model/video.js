@@ -103,7 +103,8 @@ module.exports = {
     getVideoList: async function(page=0) {
         try {
             const limit = 30, offset = page * 30;
-            const selectQ = `select a.video_id, a.video_url, a.video_title, a.thumbnail, a.duration, a.upload_date, a.reg_date, a.view_count, b.publisher_name, count(c.frame_id) as frames from video as a inner join publisher as b on a.publisher_id=b.publisher_id inner join frame as c on a.video_id=c.video_id and c.visible=1 limit ${limit} offset ${offset};`;
+            const selectQ = `select a.video_id, a.video_url, a.video_title, a.thumbnail, a.duration, a.upload_date, a.reg_date, a.view_count, b.publisher_name, count(c.frame_id) as frames from video as a inner join publisher as b on a.publisher_id=b.publisher_id inner join frame as c on a.video_id=c.video_id and c.visible=1 group by a.video_id limit ${limit} offset ${offset};`;
+            console.log(selectQ);
             return await db.selectSync(selectQ);
         } catch (err) {
             return {result: false, message: err.message};
