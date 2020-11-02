@@ -28,13 +28,15 @@ module.exports = {
                     return {result: false, message: insertResult.message};
                 }
                 // 영상 카테고리 저장
-                const categories = await videoInfo.categories.map(function(elem) {
-                    return [elem];
-                });
-                insertQ = `insert ignore into category (category_name) values ? `;
-                insertResult = await db.bulkSync(insertQ, categories);
-                if (!insertResult.result) {
-                    return {result: false, message: insertResult.message};
+                if (videoInfo.categories.length > 0) {
+                    const categories = await videoInfo.categories.map(function(elem) {
+                        return [elem];
+                    });
+                    insertQ = `insert ignore into category (category_name) values ? `;
+                    insertResult = await db.bulkSync(insertQ, categories);
+                    if (!insertResult.result) {
+                        return {result: false, message: insertResult.message};
+                    }
                 }
                 // 모든 데이터 저장이 올바르게 끝났을 경우
                 return {result: true};

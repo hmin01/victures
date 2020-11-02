@@ -269,7 +269,7 @@
                             $('.video-content-detail[name="uploadDate"]').html(`<p>${printNull(res.message.uploadDate)}</p>`);
                             $('.video-content-detail[name="duration"]').html(`<p>${printNull(res.message.durationString)}</p>`);
                             $('.video-content-detail[name="duration"] > p').data('time', res.message.duration);
-                            $('.video-content-detail[name="categories"]').html(`<p>${printNull(res.message.categories)}</p>`);
+                            $('.video-content-detail[name="categories"]').html(`<p>${res.message.categories.length === 0 ? "-" : res.message.categories.toString()}</p>`);
                             $('.video-content-detail[name="viewCount"]').html(`<p>${printNull(res.message.viewCount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>`);
                             $('.video-content-detail[name="description"]').html(`<p>${printNull(res.message.description)}</p>`);
 
