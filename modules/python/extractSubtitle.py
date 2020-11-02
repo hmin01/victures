@@ -21,7 +21,7 @@ def extractSubtitle(path):
     subtitles = []
     for elem in srtData:
         # 줄바꿈 문자 제거
-        elem.content = elem.content.replace("\n", "")
+        elem.content = elem.content.replace("\n", " ")
         # kiwi를 이용하여 자막 문장 분석
         result = kiwi.analyze(elem.content)
         # 문장 분석 결과에서 종결어미 추출
@@ -63,7 +63,14 @@ def extractSubtitle(path):
         else:
             # 자막에 종결 어미가 없을 경우, 다은 자막 문장과 연결될 수 있기 때문에 temp 리스트에 해당 자막 문장 정보를 저장
             temp.append(Subtitle(elem.start, elem.end,  elem.content))
-    
+
+    if len(temp) > 0:
+        # temp list에 저장된 문장들 결합
+        contents = list(map(lambda x: x.content, temp))
+        sentence = " ".join(contents)
+        # 결합된 문장과 temp list 에 자막 정보를 이용하여 새로운 자막(1줄) 정보를 가진 dictionary 생성
+        sentObj = Subtitle((temp[0]).start, (temp[len(temp) - 1]).end, sentence)
+
     del srtData
     del temp
 

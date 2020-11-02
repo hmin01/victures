@@ -223,7 +223,7 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="form-button">
-                                <button type="button" class="basis-button rounded-sm">Confirm</button>
+                                <button type="button" class="basis-button rounded-sm" id="btn-save">Save</button>
                             </div>
                         </div>
                     </div>
@@ -354,6 +354,34 @@
             // Next slide
             $('.slide-button[name="next"]').on('click', function() {
                 showSlides(currentSlideIndex += 1);
+            });
+
+            // Save
+            $('#btn-save').on('click', function() {
+                const selected = {};
+                document.querySelectorAll('.frame-card .check').forEach(function(elem) {
+                    const $this = $(elem);
+                    index = $this.parent().data('index');
+                    if ($this.hasClass('selected')) {
+                        selected[index] = true;
+                    } else {
+                        selected[index] = false;
+                    }
+                });
+                console.log(selected)
+
+                $.ajax({
+                    type: "POST",
+                    url: "/convert/step/save",
+                    data: "selected=" + JSON.stringify(selected),
+                    success: function(res) {
+                        if (res.result) {
+                            location.href = "/";
+                        } else {
+                            alert(res.message);
+                        }
+                    }
+                });
             });
         </script>
     </body>

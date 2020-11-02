@@ -13,9 +13,7 @@ module.exports = {
     login: async (info) => {
         try {
             const selectQ = `select * from user where email="${info.email}" and password="${info.password}"`;
-            console.log(selectQ)
             const result = await db.selectSync(selectQ);
-            console.log(result);
             if (result.result && result.message.length > 0) {
                 return result;
             } else {

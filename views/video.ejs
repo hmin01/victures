@@ -63,7 +63,7 @@
                 text-overflow: ellipsis;
                 white-space: nowrap;
             }
-            .video-content > .video-author {
+            .video-content > .video-publisher {
                 font-size: 14px;
                 font-weight: 300;
                 margin-bottom: 0.625rem;
@@ -156,7 +156,7 @@
                             </div>
                             <div class="video-content">
                                 <h5 class="video-title" title="네고왕">네고왕</h5>
-                                <p class="video-author" title="">Channel name</p>
+                                <p class="video-publisher" title="">Channel name</p>
                                 <div class="video-content-detail">
                                     <p class="video-reg-date">2주 전</p>
                                     <p class="video-views">view <small>1,000+</small></p>
@@ -177,40 +177,76 @@
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" type="text/javascript"></script>
         <!-- Local -->
         <script>
+            let PAGE = 0;
+
             $(document).ready(() => {
-                // Test
-                const testVideo = {
-                    url: "/thumbnail/test.png",
-                    title: "네고왕",
-                    author: "Channel_name",
-                    regDate: "2주 전",
-                    views: "1,000+"
-                }
-                for (let i=0; i<20; i++) {
-                    createVideoItem(testVideo);
-                }
+                // Init
+                getVideoList(PAGE);
+
+                // Click play button
+                $(document).on('click', '.video-card span[name="go-video"]', function() {
+                    const url = $(this).data('url');
+                    window.open(url, '_blank');
+                });
+
+                // Click picture button
+                $(document).on('click', '.video-card span[name="go-picture"]', function() {
+                    location.href = `/video/pictures?id=${$(this).data('id')}`;
+                });
             });
 
+            function getVideoList(page) {
+                $.ajax({
+                    type: "GET",
+                    url: "/video/list",
+                    data: "page=" + PAGE,
+                    success: function(res) {
+                        if (!res.result) {
+                            console.error(res.message);
+                        } else {
+                            for (const elem of res.message) {
+                                createVideoItem(elem);
+                            }
+                        }
+                    }
+                });
+            }
+
             function createVideoItem(elem) {
+                // Calculate time
+                const d_h = Math.floor(Number(elem.duration) / 3600);
+                const d_m = Math.floor((Number(elem.duration) % 3600) / 60);
+                const d_s = Number(elem.duration) % 60;
+                const hour = d_h === 0 ? 0 : (d_h < 10 ? "0" + d_h : d_h);
+                const munite = d_m < 10 ? "0" + d_m : d_m;
+                const seconds = d_s < 10 ? "0" + d_s : d_s;
+                const time = hour === 0 ? `${munite}:${seconds}` : `${hour}:${munite}:${seconds}`;
+                // Calculate date
+                const date = new Date(elem.reg_date);
+                const dateStr = `${date.getFullYear()}/${date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1}/${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()}`;
+                // Calculate view count (round)
+                const digit = elem.view_count.toString().length > 4 ? elem.view_count.toString().length - 2 : (elem.view_count.toString().length > 1 ? elem.view_count.toString().length - 1 : elem.view_count.toString().length);
+                const roundedNum = Math.floor((elem.view_count / Math.pow(10, digit)).toFixed(digit)) * Math.pow(10, digit);
+                // Generate html code
                 const item = `<div class="col-xl-4 col-sm-6">
                                 <div class="video-card shadow-sm">
                                     <div class="video-thumbnail-form">
-                                        <img class="video-thumbnail" src="${elem.url}" />
+                                        <img class="video-thumbnail" src="${elem.thumbnail}" />
                                         <div class="video-tools">
-                                            <span class="video-tools-item btn-video"><i class="far fa-play-circle fa-2x"></i></span>
-                                            <span class="video-tools-item btn-picture"><i class="far fa-image fa-2x"></i></span>
+                                            <span class="video-tools-item" name="go-video" data-url="${elem.video_url}"><i class="far fa-play-circle fa-2x"></i></span>
+                                            <span class="video-tools-item" name="go-picture" data-id="${elem.video_id}"><i class="far fa-image fa-2x"></i></span>
                                         </div>
                                         <div class="video-play-info">
-                                            <span class="video-play-time"><i class="far fa-clock"></i><label>03:33</label></span>
-                                            <span class="video-picture-count"><i class="far fa-images"></i><label>35</label></span>
+                                            <span class="video-play-time"><i class="far fa-clock"></i><label>${time}</label></span>
+                                            <span class="video-picture-count"><i class="far fa-images"></i><label>${elem.frames}</label></span>
                                         </div>
                                     </div>
                                     <div class="video-content">
-                                        <h5 class="video-title" title="${elem.title}">${elem.title}</h5>
-                                        <p class="video-author" title="">${elem.author}</p>
+                                        <h5 class="video-title" title="${elem.video_title}">${elem.video_title}</h5>
+                                        <p class="video-publisher" title="">${elem.publisher_name}</p>
                                         <div class="video-content-detail">
-                                            <p class="video-reg-date">${elem.regDate}</p>
-                                            <p class="video-views">view <small>${elem.views}</small></p>
+                                            <p class="video-reg-date">${dateStr}</p>
+                                            <p class="video-views">view <small>${roundedNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}+</small></p>
                                         </div>
                                     </div>
                                 </div>

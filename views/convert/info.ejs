@@ -68,14 +68,14 @@
                 font-weight: 200;
             }
             .video-content-detail[name="url"] > p,
-            .video-content-detail[name="author"] > p {
+            .video-content-detail[name="publisher"] > p {
                 color: #8000AB;
                 cursor: pointer;
                 font-weight: 500;
                 transition: color 0.4s ease-out;
             }
             .video-content-detail[name="url"] > p:hover,
-            .video-content-detail[name="author"] > p:hover {
+            .video-content-detail[name="publisher"] > p:hover {
                 color: #F73B0C;
             }
             .video-content-detail[name="description"] > p {
@@ -159,8 +159,8 @@
                                     <div class="row">
                                         <div class="col-8 pr-0">
                                             <div class="video-content-row">
-                                                <label class="video-content-subtitle">Author</label>
-                                                <div class="video-content-detail" name="author"></div>
+                                                <label class="video-content-subtitle">Publisher</label>
+                                                <div class="video-content-detail" name="publisher"></div>
                                             </div>
                                         </div>
                                         <div class="col-4 pl-0">
@@ -264,8 +264,8 @@
                             $('.video-thumbnail').attr('src', res.message.thumbnail);
                             $('.video-content-detail[name="url"]').html(`<p>${printNull(res.message.url)}</p>`);
                             $('.video-content-detail[name="title"]').html(`<p>${printNull(res.message.title)}</p>`);
-                            $('.video-content-detail[name="author"]').html(`<p>${printNull(res.message.author)}</p>`);
-                            $('.video-content-detail[name="author"] > p').data('url', res.message.authorUrl);
+                            $('.video-content-detail[name="publisher"]').html(`<p>${printNull(res.message.publisher)}</p>`);
+                            $('.video-content-detail[name="publisher"] > p').data('url', res.message.publisherUrl);
                             $('.video-content-detail[name="uploadDate"]').html(`<p>${printNull(res.message.uploadDate)}</p>`);
                             $('.video-content-detail[name="duration"]').html(`<p>${printNull(res.message.durationString)}</p>`);
                             $('.video-content-detail[name="duration"] > p').data('time', res.message.duration);
@@ -284,8 +284,8 @@
                                 window.open(url, '_blank')
                             });
 
-                            // Author click event
-                            $('.video-content-detail[name="author"] > p').on('click', function() {
+                            // Publisher click event
+                            $('.video-content-detail[name="publisher"] > p').on('click', function() {
                                 const url = $(this).data('url');
                                 window.open(url, '_blank')
                             });

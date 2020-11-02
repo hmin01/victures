@@ -140,19 +140,19 @@ module.exports = {
                         }
                     });
                 } else {
-                    callback({result: false, message: `Not found video (ID: ${videoID})`});
+                    callback({result: false, message: `Not found video (ID: ${videoInfo.id})`});
                 }
             } else {
-                callback({result: false, message: `Not found video directory (ID: ${videoID})`});
+                callback({result: false, message: `Not found video directory (ID: ${videoInfo.id})`});
             }
         } catch (err) {
             callback({result: false, message: err.message});
         }
     },
-    extractFrames: function(videoID, callback) {
+    extractFrames: function(videoUUID, callback) {
         try {
             // Check video existence
-            const filePath = path.join(VIDEO_DIR, videoID);
+            const filePath = path.join(VIDEO_DIR, videoUUID);
             if (fs.existsSync(filePath)) {
                 let videoFile = null;
                 const list = fs.readdirSync(filePath);
@@ -184,25 +184,47 @@ module.exports = {
                         }
                     });
                 } else {
-                    callback({result: false, message: `Not found video (ID: ${videoID})`});
+                    callback({result: false, message: `Not found video (ID: ${videoUUID})`});
                 }
             } else {
-                callback({result: false, message: `Not found video directory (ID: ${videoID})`});
+                callback({result: false, message: `Not found video directory (ID: ${videoUUID})`});
             }
         } catch (err) {
             callback({result: false, message: err.message});
         }
     },
-    getSubtitles: async function(videoID) {
+    getSubtitleList: async function(videoUUID) {
         try {
             // Check video existence
-            const filePath = path.join(VIDEO_DIR, videoID);
+            const filePath = path.join(VIDEO_DIR, videoUUID);
             if (fs.existsSync(filePath)) {
-                const rawData = fs.readFileSync(path.join(filePath, `data/options_${videoID}.json`)).toString();
+                const dirContents = fs.readdirSync(filePath);
+
+                const list = [];
+                for (const elem of dirContents) {
+                    if (/.srt$/.test(elem)) {
+                        list.push(elem);
+                    }
+                }
+
+                return {result: true, message: list};
+            } else {
+                return {result: false, message: `Not found video directory (ID: ${videoUUID})`};
+            }
+        } catch (err) {
+            return {result: false, message: err.meesage};
+        }
+    },
+    getProcessedSubtitles: async function(videoUUID) {
+        try {
+            // Check video existence
+            const filePath = path.join(VIDEO_DIR, videoUUID);
+            if (fs.existsSync(filePath)) {
+                const rawData = fs.readFileSync(path.join(filePath, `data/options_${videoUUID}.json`)).toString();
                 const options = JSON.parse(rawData);
                 return {result: true, message: options};
             } else {
-                return {result: false, message: `Not found video directory (ID: ${videoID})`};
+                return {result: false, message: `Not found video directory (ID: ${videoUUID})`};
             }
         } catch (err) {
             return {result: false, message: err.meesage};

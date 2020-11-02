@@ -20,28 +20,23 @@
                 position: relative;
                 width: 100%;
             }
-            .slide-card {
-                display: none;
-                position: relative;
-            }
-            .slide-card .check {
+            .frame-count {
                 background-color: #212121BB;
-                border-radius: 50%;
-                color: #616161;
-                cursor: pointer;
-                font-size: 16px;
+                border-radius: 0.25rem;
+                color: #FFFFFF;
+                font-size: 14px;
+                font-weight: 900;
                 right: 15px;
                 padding: 12px 12px 10px 12px;
                 position: absolute;
                 top: 15px;
                 transition: background-color 0.4s, color 0.4s;
+                user-select: none;
                 z-index: 10;
             }
-            .slide-card .check:hover {
-                background-color: #A1A1A1BB;
-            }
-            .slide-card .check.selected {
-                background-color: #F3D00BD8;
+            .slide-card {
+                display: none;
+                position: relative;
             }
             .slide-card .frame {
                 width: 100%;
@@ -78,6 +73,14 @@
                 border-top-left-radius: 0.375rem;
                 border-bottom-left-radius: 0.375rem;
                 right: 0;
+            }
+            .subtitle {
+                background-color: #FFFFFF;
+                color: #454545;
+                font-size: 15px;
+                text-align: center;
+                padding: 1rem 1.125rem;
+                word-break: keep-all;
             }
 
             /* Fading animation */
@@ -124,19 +127,14 @@
                     </div>
                 </nav>
             </article>
-            <article class="vic-page-body container-xl">
-                <div class="form-slider">
-                    <a class="slide-button" name="prev"><i class="fa fa-2x fa-chevron-left"></i></a>
-                    <a class="slide-button" name="next"><i class="fa fa-2x fa-chevron-right"></i></a>
-                </div>
-                <div>
-                    <div class="form-frames mt-0">
-                        <div>추출된 Frame 갯수: <label id="frame-count"></label></div>
+            <article class="vic-page-body container-xl" data-id="<%= id %>">
+                <div class="col-lg-12">
+                    <span class="frame-count"></span>
+                    <div class="form-slider">
+                        <a class="slide-button" name="prev"><i class="fa fa-2x fa-chevron-left"></i></a>
+                        <a class="slide-button" name="next"><i class="fa fa-2x fa-chevron-right"></i></a>
                     </div>
-                    <div class="form-button">
-                        <a class="basis-button rounded-sm px-3" name="prev" href="/convert/step/info">Prev</a>
-                        <a class="basis-button rounded-sm px-3 d-none" name="next" id="btn-step-next">Next</a>
-                    </div>
+                    <div class="subtitle"></div>
                 </div>
             </article>
         </section>
@@ -151,28 +149,32 @@
         <script src="/javascripts/public-function.js" type="text/javascript"></script>
         <!-- Local -->
         <script>
-            // Get frames
-            $.ajax({
-                type: "GET",
-                url: "/convert/step/select/frames",
-                success: function(res) {
-                    if (res.result) {
-                        $('#frame-count').text(res.message.length);
+            // Video ID
+            const VIDEO_ID = $('.vic-page-body').data('id');
+            let TOTAL_COUNT = null;
+            let SUBTITLES = null;
 
-                        let index = 0;
-                        for (const elem of res.message) {
-                            let slide;
-                            if (index === 0) {
-                                slide = `<div class="slide-card fade-slide show" data-index="${index}"><span class="slide-count"></span><span class="check"><i class="fa fa-check"></i></span><img class="frame" src="${elem}"><div class="subtitle"></div></div>`;
-                            } else {
-                                slide = `<div class="slide-card fade-slide" data-index="${index}"><span class="slide-count"></span><span class="check"><i class="fa fa-check"></i></span><img class="frame" src="${elem}"><div class="subtitle"></div></div>`;
-                            }
-                            $('.form-slider').append(slide);
-                            index++;
+            // Get frames
+            $.get(`/video/pictures/list?id=${VIDEO_ID}`, function(res) {
+                if (res.result) {
+                    TOTAL_COUNT = res.frames.length;
+                    SUBTITLES = res.subtitles;
+
+                    let index = 0;
+                    for (const elem of res.frames) {
+                        let slide;
+                        if (index === 0) {
+                            slide = `<div class="slide-card fade-slide show" data-index="${index}" data-numbering="${elem.numbering}"><img class="frame" src="${elem.frame_url}"></div>`;
+                        } else {
+                            slide = `<div class="slide-card fade-slide" data-index="${index}" data-numbering="${elem.numbering}"><img class="frame" src="${elem.frame_url}"></div>`;
                         }
-                    } else {
-                        alert(res.message);
+                        $('.form-slider').append(slide);
+                        index++;
                     }
+
+                    showSlides(0);
+                } else {
+                    console.error(res.message);
                 }
             });
 
@@ -208,6 +210,13 @@
                     $(slide).removeClass('show');
                 }
                 $(document.querySelector(`.slide-card[data-index="${currentSlideIndex}"]`)).addClass('show');
+
+                // Set count
+                $('.frame-count').text(`${currentSlideIndex + 1} / ${TOTAL_COUNT}`);
+
+                // Set subtitle
+                $('.subtitle').text(SUBTITLES[currentSlideIndex].sentence);
+
                 // move dot
                 // var dots = document.getElementsByClassName("dot");
                 // for (i = 0; i < dots.length; i++) {

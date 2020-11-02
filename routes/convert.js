@@ -4,7 +4,8 @@ const express = require('express');
 const router = express.Router();
 // Module
 const video = require('../modules/video');
-const { info } = require('console');
+// DB
+const videoDB = require('../model/video');
 // Temp path
 const stateDirPath = path.join(__dirname, "../public/temp");
 
@@ -70,8 +71,8 @@ router.post('/step/info', (req, res) => {
                         url: result.videoInfo.webpage_url,
                         title: result.videoInfo.title,
                         description: result.videoInfo.description,
-                        author: result.videoInfo.uploader,
-                        authorUrl: result.videoInfo.uploader_url,
+                        publisher: result.videoInfo.uploader,
+                        publisherUrl: result.videoInfo.uploader_url,
                         uploadDate: uploadDate,
                         thumbnail: result.videoInfo.thumbnail,
                         categories: result.videoInfo.categories,
@@ -241,7 +242,7 @@ router.get('/step/select/frames', async (req, res) => {
         const frameDir = path.join(__dirname, "../public/dist/videos/", req.session.video.info.id, "frames");
         if (fs.existsSync(frameDir)) {
             // Get subtitle
-            const result = await video.getSubtitles(req.session.video.info.id);
+            const result = await video.getProcessedSubtitles(req.session.video.info.id);
             if (result.result) {
                 // Get frames
                 const ls = fs.readdirSync(frameDir);
@@ -256,7 +257,6 @@ router.get('/step/select/frames', async (req, res) => {
                 frames.sort(function(a, b) {
                     return a.seq > b.seq ? 1 : a.seq < b.seq ? -1 : 0;
                 });
-                console.log(frames);
                 res.json({result: true, data: result.message, frames: frames});
             } else {
                 res.json({result: false, message: result.message});
@@ -266,5 +266,83 @@ router.get('/step/select/frames', async (req, res) => {
         }
     }
 });
+
+/* [Step 5] Save data */
+router.post('/step/save', async (req, res) => {
+    if (req.session.video === undefined || req.session.video.info === undefined) {
+        res.json({result: false, message: "Invalid process flow"});
+    } else {
+        // Save video info
+        let saveResult = await videoDB.addInfo(req.session.video.info);
+        if (!saveResult.result) {
+            res.json({result: false, message: saveResult.message});
+            return;
+        }
+        // Get video id using uuid
+        let videoID = null;
+        let selectResult = await videoDB.getVideoID(req.session.video.info.id);
+        if (selectResult.result) {
+            if (selectResult.message.length === 0) {
+                res.json({result: false, message: "Not found video data"});
+                return;
+            } else {
+                videoID = selectResult.message.video_id;
+            }
+        } else {
+            res.json({result: false, message: selectResult.message});
+            return;
+        }
+        // Save subtitle
+        selectResult = await video.getSubtitleList(req.session.video.info.id);
+        if (selectResult.result) {
+            if (selectResult.message.length > 0) {
+                saveResult = await videoDB.addSubtitle(videoID, `/public/dist/videos/${req.session.video.info.id}/`, selectResult.message);
+                if (!selectResult.result) {
+                    res.json({result: false, message: saveResult.message});
+                    return;
+                }
+            }
+        } else {
+            res.json({result: false, message: selectResult.message});
+            return;
+        }
+        // Save processed subtitle
+        let processedSubtitle = null;
+        selectResult = await video.getProcessedSubtitles(req.session.video.info.id);
+        if (selectResult.result) {
+            if (selectResult.message.length > 0) {
+                processedSubtitle = selectResult.message;
+                saveResult = await videoDB.addProcessedSubtitle(videoID, "ko", processedSubtitle);
+                if (!selectResult.result) {
+                    res.json({result: false, message: saveResult.message});
+                    return;
+                }
+            }
+        } else {
+            res.json({result: false, message: selectResult.message});
+            return;
+        }
+        // Save frame
+        if (processedSubtitle !== null) {
+            const frameData = [];
+            const selected = JSON.parse(req.body.selected);
+            for (let index = 1; index <= processedSubtitle.length; index++) {
+                const isSelected = selected[index] ? 1 : 0;
+                frameData.push([videoID, index,  processedSubtitle[index - 1].frameIndex, `/source/${req.session.video.info.id}/frames/frame_${index}.png`, isSelected]);
+            }
+
+            saveResult = await videoDB.addFrame(frameData);
+            if (!saveResult.result) {
+                res.json({result: false, message: saveResult.message});
+                return;
+            }
+        } else {
+            res.json({result: false, message: "save data error"});
+            return;
+        }
+        // Save complete
+        res.json({result: true});
+    }
+})
 
 module.exports = router;
