@@ -75,7 +75,7 @@ router.post('/step/info', (req, res) => {
                         publisherUrl: result.videoInfo.uploader_url,
                         uploadDate: uploadDate,
                         thumbnail: result.videoInfo.thumbnail,
-                        categories: result.videoInfo.categories,
+                        categories: result.videoInfo.categories !== null ? result.videoInfo.categories : [],
                         tags: result.videoInfo.tags,
                         viewCount: result.videoInfo.view_count,
                         averageRating: result.videoInfo.average_rating,

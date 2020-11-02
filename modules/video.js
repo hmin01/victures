@@ -120,6 +120,7 @@ module.exports = {
                     for (const elem of videoInfo.categories) {
                         if (elem.toLowerCase().indexOf('news') !== -1) extractSents = "True";
                     }
+                    if (videoInfo.categories.length === 0) extractSents = "True";
                     // Child process
                     const python = childProc.spawn('python3', [pythonExe, extractSents, videoFile], {cwd: PYTHON_DIR});
                     python.stdout.on('data', function(data) {
