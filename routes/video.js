@@ -4,6 +4,7 @@ const router = express.Router();
 const videoDB = require('../model/video');
 
 router.get('/', async (req, res) => {
+    delete req.session.video;
     res.render('video');
 });
 
