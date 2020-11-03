@@ -14,6 +14,30 @@
         <link rel="stylesheet" type="text/css" href="/stylesheets/convert-page.css">
         <!-- Local -->
         <style type="text/css">
+            .video-title {
+                margin-top: 1rem;
+                margin-bottom: 0.875rem;
+                position: relative;
+            }
+            .video-title h5 {
+                margin-bottom: 0;
+                padding-right: 73px;
+            }
+            .video-title .title-tools {
+                float: right;
+                font-size: 21px;
+                margin-top: 2px;
+            }
+            .video-title .title-tools > a {
+                color: #3F8C3C;
+                cursor: pointer;
+                margin-left: 0.875rem;
+                transition: color 0.35s;
+            }
+            .video-title .title-tools > a:hover {
+                color: #44B35F;
+            }
+
             .form-slider {
                 align-items: center;
                 display: flex;
@@ -129,10 +153,17 @@
             </article>
             <article class="vic-page-body container-xl" data-id="<%= id %>">
                 <div class="col-lg-12">
-                    <span class="frame-count"></span>
+                    <div class="video-title">
+                        <div class="title-tools">
+                            <a href="/"><i class="fas fa-bars"></i></a>
+                            <a id="btn-youtube" data-url="<%= url %>"><i class="fab fa-youtube"></i></a>
+                        </div>
+                        <h5><%= title %></h5>
+                    </div>
                     <div class="form-slider">
-                        <a class="slide-button" name="prev"><i class="fa fa-2x fa-chevron-left"></i></a>
-                        <a class="slide-button" name="next"><i class="fa fa-2x fa-chevron-right"></i></a>
+                        <span class="frame-count"></span>
+                        <a class="slide-button" name="prev"><i class="fas fa-2x fa-chevron-left"></i></a>
+                        <a class="slide-button" name="next"><i class="fas fa-2x fa-chevron-right"></i><i class="fas fa-2x fa-redo d-none"></i></a>
                     </div>
                     <div class="subtitle"></div>
                 </div>
@@ -153,6 +184,12 @@
             const VIDEO_ID = $('.vic-page-body').data('id');
             let TOTAL_COUNT = null;
             let SUBTITLES = null;
+
+            // Go youtube
+            $('#btn-youtube').on('click', function() {
+                const href = $(this).data('url');
+                window.open(href, '_blank');
+            });
 
             // Get frames
             $.get(`/video/pictures/list?id=${VIDEO_ID}`, function(res) {
@@ -201,11 +238,22 @@
             function showSlides(n) {
                 // move slide
                 const slides = document.querySelectorAll(".slide-card");
-                if (n > slides.length - 1) {
+
+                if (n == slides.length - 1) {
+                    $('.slide-button > .fa-chevron-right').addClass('d-none');
+                    $('.slide-button > .fa-redo').removeClass('d-none');
+                } else if (n > slides.length - 1 || n == 0) {
                     currentSlideIndex = 0;
-                } else if (n < 0) {
-                    currentSlideIndex = slides.length - 1;
+                    $('.slide-button[name="prev"]').addClass('d-none');
+                    $('.slide-button > .fa-chevron-right').removeClass('d-none');
+                    $('.slide-button > .fa-redo').addClass('d-none');
+                } else {
+                    $('.slide-button[name="prev"]').removeClass('d-none');
+                    $('.slide-button[name="next"]').removeClass('d-none');
+                    $('.slide-button > .fa-chevron-right').removeClass('d-none');
+                    $('.slide-button > .fa-redo').addClass('d-none');
                 }
+
                 for (const slide of slides) {
                     $(slide).removeClass('show');
                 }

@@ -102,6 +102,28 @@ module.exports = {
             return {result: false, message: err.message};
         }
     },
+    getVideoInfo: async function(param, type="id") {
+        try {
+            let selectQ = `select * from video`;
+            if (type === "id") {
+                selectQ += ` where video_id=${param};`;
+            } else if (type === "uuid") {
+                selectQ += ` where video_uuid=${param};`;
+            }
+            const selectResult = await db.selectSync(selectQ);
+            if (selectResult.result) {
+                if (selectResult.message.length > 0) {
+                    return {result: true, message: selectResult.message[0]};
+                } else {
+                    return {result: false, message: "Not found video"};
+                }
+            } else {
+                return {result: false, message: selectResult.message};
+            }
+        } catch (err) {
+            return {result: false, message: err.message};
+        }
+    },
     getVideoList: async function(page=0) {
         try {
             const limit = 30, offset = page * 30;
