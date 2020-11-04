@@ -9,7 +9,8 @@ const supportHost = [
     'www.youtube.com'
 ]
 // Path
-const VIDEO_DIR = path.join(__dirname, '../public/dist/videos');
+const WORKSPACE_DIR = path.join(__dirname, '../public/workspace');
+const VIDEO_DIR = path.join(__dirname, '../public/dist');
 const PYTHON_DIR = path.join(__dirname, './python');
 
 module.exports = {
@@ -74,12 +75,12 @@ module.exports = {
             callback({result: false, message: err.message});
         }
     },
-    download: function(urlString, callback) {
+    download: function(pIndex, videoUUID, urlString, callback) {
         try {
             const parseResult = this.parseUrl(urlString);
             if (parseResult.result) {
                 // Download video
-                const filePath = path.join(VIDEO_DIR, '%(id)s/%(id)s.%(ext)s');
+                const filePath = path.join(WORKSPACE_DIR, `${pIndex}_%(id)s/%(id)s.%(ext)s`);
                 const args = ['--output', filePath, '-f', '(mp4)[height>=720]', '--all-subs', '--convert-subs', 'srt', urlString];
 
                 const youtubeDL = childProc.spawn('youtube-dl', args);
@@ -87,8 +88,17 @@ module.exports = {
                 youtubeDL.on('close', (code) => {
                     console.info(`spawn exit code: ${code}`);
                     if (code === 0) {
+                        const videoDir = path.join(VIDEO_DIR, videoUUID);
+                        if (!fs.existsSync(videoDir))
+                            fs.mkdirSync(videoDir);
+
                         callback({result: true});
                     } else {
+                        const tempPath = path.join(WORKSPACE_DIR, `${pIndex}_${videoUUID}`);
+                        if (fs.existsSync(tempPath)) {
+                            fs.rmdirSync({recursive: true});
+                        }
+
                         callback({result: false, message: "Youtube-dl error"});
                     }
                 });
@@ -99,10 +109,10 @@ module.exports = {
             callback({result: false, message: err.message});
         }
     },
-    extractKeywords: function(videoInfo, callback) {
+    extractKeywords: function(pIndex, videoInfo, callback) {
         try {
             // Check video existence
-            const filePath = path.join(VIDEO_DIR, videoInfo.id);
+            const filePath = path.join(WORKSPACE_DIR, `${pIndex}_${videoInfo.id}`);
             if (fs.existsSync(filePath)) {
                 let videoFile = null;
                 const list = fs.readdirSync(filePath);
@@ -114,15 +124,9 @@ module.exports = {
                 }
 
                 if (videoFile !== null) {
-                    const pythonExe = path.join(PYTHON_DIR, '/extractKeywords.py');
-                    // Check news category (conbination sentence 여부)
-                    let extractSents = "False";
-                    for (const elem of videoInfo.categories) {
-                        if (elem.toLowerCase().indexOf('news') !== -1) extractSents = "True";
-                    }
-                    if (videoInfo.categories.length === 0) extractSents = "True";
+                    const pythonExe = path.join(PYTHON_DIR, '/extractKeywords_news.py');
                     // Child process
-                    const python = childProc.spawn('python3', [pythonExe, extractSents, videoFile], {cwd: PYTHON_DIR});
+                    const python = childProc.spawn('python3', [pythonExe, pIndex.toString(), videoFile], {cwd: PYTHON_DIR});
                     python.stdout.on('data', function(data) {
                         console.log('stdout: ' + data);
                     });
@@ -150,10 +154,10 @@ module.exports = {
             callback({result: false, message: err.message});
         }
     },
-    extractFrames: function(videoUUID, callback) {
+    extractFrames: function(pIndex, videoUUID, callback) {
         try {
             // Check video existence
-            const filePath = path.join(VIDEO_DIR, videoUUID);
+            const filePath = path.join(WORKSPACE_DIR, `${pIndex}_${videoUUID}`);
             if (fs.existsSync(filePath)) {
                 let videoFile = null;
                 const list = fs.readdirSync(filePath);
@@ -166,16 +170,16 @@ module.exports = {
 
                 if (videoFile !== null) {
                     const pythonExe = path.join(PYTHON_DIR, '/extractFrames.py');
-                    const python = childProc.spawn('python3', [pythonExe, videoFile], {cwd: PYTHON_DIR});
-                    // python.stdout.on('data', function(data) {
-                    //     console.log('stdout: ' + data);
-                    // });
-                    // python.stderr.on('data', function(data) {
-                    //     console.log('stderr: ' + data);
-                    // });
-                    // python.on('exit', function(code) {
-                    //     console.log('exit: ' + code);
-                    // });
+                    const python = childProc.spawn('python3', [pythonExe, pIndex.toString(), videoFile], {cwd: PYTHON_DIR});
+                    python.stdout.on('data', function(data) {
+                        console.log('stdout: ' + data);
+                    });
+                    python.stderr.on('data', function(data) {
+                        console.log('stderr: ' + data);
+                    });
+                    python.on('exit', function(code) {
+                        console.log('exit: ' + code);
+                    });
                     python.on('close', (code) => {
                         console.info(`pythone exit code: ${code}`);
                         if (code === 0) {
@@ -194,10 +198,10 @@ module.exports = {
             callback({result: false, message: err.message});
         }
     },
-    getSubtitleList: async function(videoUUID) {
+    getSubtitleList: async function(pIndex, videoUUID) {
         try {
             // Check video existence
-            const filePath = path.join(VIDEO_DIR, videoUUID);
+            const filePath = path.join(VIDEO_DIR, videoUUID, pIndex.toString());
             if (fs.existsSync(filePath)) {
                 const dirContents = fs.readdirSync(filePath);
 
@@ -216,10 +220,10 @@ module.exports = {
             return {result: false, message: err.meesage};
         }
     },
-    getProcessedSubtitles: async function(videoUUID) {
+    getProcessedSubtitles: async function(pIndex, videoUUID) {
         try {
             // Check video existence
-            const filePath = path.join(VIDEO_DIR, videoUUID);
+            const filePath = path.join(VIDEO_DIR, videoUUID, pIndex.toString());
             if (fs.existsSync(filePath)) {
                 const rawData = fs.readFileSync(path.join(filePath, `data/options_${videoUUID}.json`)).toString();
                 const options = JSON.parse(rawData);

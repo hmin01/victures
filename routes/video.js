@@ -28,7 +28,6 @@ router.get('/pictures', async function(req, res) {
     const videoID = req.query.id;
     const result = await videoDB.getVideoInfo(videoID, "id");
     if (result.result) {
-        console.log(result.message);
         res.render('view', {id: videoID, title: result.message.video_title, url: result.message.video_url});
     } else {
         console.error(result.message);

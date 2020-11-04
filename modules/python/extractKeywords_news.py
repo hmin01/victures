@@ -12,13 +12,15 @@ POS_LIST = ["NNG", "NR"]
 ## current work path (/modules/python)
 CURRENT_PATH = os.getcwd()
 ## etc path
-SOURCE_DIR = os.path.join(CURRENT_PATH, "../../public/dist/")
-DICTIONARY_PATH = os.path.join(CURRENT_PATH, "./src/customDictionary.txt")
+WORKSPACE_DIR = None
+SOURCE_DIR = os.path.join(CURRENT_PATH, '../../public/dist/')
+DICTIONARY_PATH = os.path.join(CURRENT_PATH, './src/customDictionary.txt')
 TEMP_FILE = None
 KEYWORDS_FILE = None
 OPTIONES_FILE = None
 ## videoID and extension
 VIDEO_ID = None
+PROCESS_INDEX = None
 EXTENSION = None
 
 # [Step 0] check argv
@@ -29,12 +31,18 @@ else:
     if (idx == -1):
         exit(3)
     else:
+        PROCESS_INDEX = sys.argv[1]
         VIDEO_ID = sys.argv[2][:idx]
         EXTENSION = sys.argv[2][idx:]
+        ## set workspace
+        WORKSPACE_DIR = os.path.join(CURRENT_PATH, '../../public/workspace/', f'{PROCESS_INDEX}_{VIDEO_ID}/')
         ## set temp file path
-        TEMP_FILE = os.path.join(CURRENT_PATH, f'./src/temp_{VIDEO_ID}.txt')
+        TEMP_FILE = os.path.join(WORKSPACE_DIR, f'temp_{PROCESS_INDEX}_{VIDEO_ID}.txt')
         ## set options and keywords file path
-        dataDirPath = os.path.join(SOURCE_DIR, f'{VIDEO_ID}/data/')
+        versionDirPath = os.path.join(SOURCE_DIR, f'{VIDEO_ID}/{PROCESS_INDEX}')
+        if os.path.isdir(versionDirPath) == False:
+            os.mkdir(versionDirPath)
+        dataDirPath = os.path.join(versionDirPath, 'data')
         if os.path.isdir(dataDirPath) == False:
             os.mkdir(dataDirPath)
 
@@ -43,16 +51,10 @@ else:
         del dataDirPath
 
 # [Step 1] Read file
-subtitleFile = os.path.join(SOURCE_DIR, f'{VIDEO_ID}/{VIDEO_ID}.ko.srt')
+subtitleFile = os.path.join(WORKSPACE_DIR, f'{VIDEO_ID}.ko.srt')
 
 # [Step 2] Parse '.srt' and general subtitles
-subtitle = None
-if sys.argv[1] == "True":
-    subtitles = extractSubtitle(subtitleFile)
-else:
-    with open(subtitleFile) as file:
-        srtFile = srt.parse(file)
-        subtitles = list(srtFile)
+subtitles = extractSubtitle(subtitleFile)
 del subtitleFile
 
 # [Step 3] Extract sentences and save sentences in temp file

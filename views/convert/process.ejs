@@ -126,6 +126,7 @@
                         </div>
                         <div class="form-button">
                             <a class="basis-button rounded-sm px-3" name="prev" href="/convert/step/info">Prev</a>
+                            <a class="basis-button rounded-sm px-3 d-none" name="retry"><i class="fas fa-redo mr-1"></i>Retry</a>
                             <a class="basis-button rounded-sm px-3 d-none" name="next" href="/convert/step/select">Next</a>
                         </div>
                     </div>
@@ -175,17 +176,7 @@
                                 } else if (type === "extractFrames") {
                                     processingStep(index, "success", "Success to extract frames");
                                     // Delete state file
-                                    $.ajax({
-                                        type: "DELETE",
-                                        url: "/convert/step/state",
-                                        success: function(res) {
-                                            if (!res.result) {
-                                                console.error(res.message);
-                                            }
-
-                                            $('.form-button .basis-button[name="next"]').removeClass('d-none');
-                                        }
-                                    });
+                                    delete_tempFile("next");
                                 }
                             } else if (res.state === "fail") {
                                 pollingState = false;
@@ -196,6 +187,7 @@
                                 } else if (type === "extractFrames") {
                                     processingStep(index, 'fail', "Failed to extract frames");
                                 }
+                                delete_tempFile("retry");
                             }
                         } else {
                             pollingState = false;
@@ -226,11 +218,13 @@
                             pollingState = true;
                         } else {
                             alert(res.message);
-                            processingStep(index, 'error', "Failed to download video");
+                            processingStep(index, 'fail', "Failed to download video");
+                            delete_tempFile("retry");
                         }
                     },
                     error: function() {
-                        processingStep(index, 'error', "Failed to download video");
+                        processingStep(index, 'fail', "Failed to download video");
+                        delete_tempFile("retry");
                     }
                 });
             }
@@ -246,11 +240,13 @@
                             pollingState = true;
                         } else {
                             alert(res.message);
-                            processingStep(index, 'error', "Failed to extract frames");
+                            processingStep(index, 'fail', "Failed to extract keywords");
+                            delete_tempFile("retry");
                         }
                     },
                     error: function() {
-                        processingStep(index, 'error', "Failed to extract frames");
+                        processingStep(index, 'fail', "Failed to extract keywords");
+                        delete_tempFile("retry");
                     }
                 });
             }
@@ -266,14 +262,36 @@
                             pollingState = true;
                         } else {
                             alert(res.message);
-                            processingStep(index, 'error', "Failed to extract frames");
+                            processingStep(index, 'fail', "Failed to extract frames");
+                            delete_tempFile("retry");
                         }
                     },
                     error: function() {
-                        processingStep(index, 'error', "Failed to extract frames");
+                        processingStep(index, 'fail', "Failed to extract frames");
+                        delete_tempFile("retry");
                     }
                 });
             }
+
+            // Delete state file
+            function delete_tempFile(state="retry") {
+                $.ajax({
+                    type: "DELETE",
+                    url: "/convert/step/state",
+                    success: function(res) {
+                        if (res.result) {
+                            $(`.form-button .basis-button[name="${state}"]`).removeClass('d-none');
+                        } else {
+                            console.error(res.message);
+                        }
+                    }
+                });
+            }
+
+            // Retry button
+            $('.form-button .basis-button[name="retry"]').on('click', function() {
+                location.reload();
+            });
 
             // step processing function
             function processingStep(step, state="processing", message="") {
