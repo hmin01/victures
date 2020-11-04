@@ -21,7 +21,7 @@ module.exports = {
                     publisherID = selectResult.message[0].publisher_id;
                 }
                 // 영상 정보 저장
-                let insertQ = `insert into video (p_index, video_uuid, video_url, video_title, duration, upload_date, view_count, description, thumbnail, publisher_id) values (${pIndex}, "${videoInfo.id}", "${videoInfo.url}", "${videoInfo.title}", ${videoInfo.duration}, "${videoInfo.uploadDate}", ${videoInfo.viewCount}, "${videoInfo.description}", "${videoInfo.thumbnail}", ${publisherID});`;
+                let insertQ = `insert into video (p_index, video_uuid, video_url, video_title, duration, upload_date, view_count, description, thumbnail, publisher_id) values (${Number(pIndex)}, "${videoInfo.id}", "${videoInfo.url}", "${videoInfo.title}", ${videoInfo.duration}, "${videoInfo.uploadDate}", ${videoInfo.viewCount}, "${videoInfo.description}", "${videoInfo.thumbnail}", ${publisherID});`;
                 // on duplicate key update video_title=values(video_title), upload_date=values(upload_date), view_count=values(view_count), description=values(description), thumbnail=values(thumbnail);`;
                 let insertResult = await db.querySync(insertQ);
                 if (!insertResult.result) {
@@ -87,7 +87,7 @@ module.exports = {
     getVideoID: async function(pIndex, videoUUID) {
         try {
             // 11자리의 Video UUID를 이용하여 Video ID 검색
-            const selectQ = `select video_id from video where video_uuid="${videoUUID}" and p_index=${pIndex};`;
+            const selectQ = `select video_id from video where video_uuid="${videoUUID}" and p_index=${Number(pIndex)};`;
             const selectResult = await db.selectSync(selectQ);
             if (selectResult.result) {
                 if (selectResult.message.length > 0) {

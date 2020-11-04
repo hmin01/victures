@@ -126,7 +126,7 @@ module.exports = {
                 if (videoFile !== null) {
                     const pythonExe = path.join(PYTHON_DIR, '/extractKeywords_news.py');
                     // Child process
-                    const python = childProc.spawn('python3', [pythonExe, pIndex.toString(), videoFile], {cwd: PYTHON_DIR});
+                    const python = childProc.spawn('python3', [pythonExe, pIndex, videoFile], {cwd: PYTHON_DIR});
                     python.stdout.on('data', function(data) {
                         console.log('stdout: ' + data);
                     });
@@ -170,7 +170,7 @@ module.exports = {
 
                 if (videoFile !== null) {
                     const pythonExe = path.join(PYTHON_DIR, '/extractFrames.py');
-                    const python = childProc.spawn('python3', [pythonExe, pIndex.toString(), videoFile], {cwd: PYTHON_DIR});
+                    const python = childProc.spawn('python3', [pythonExe, pIndex, videoFile], {cwd: PYTHON_DIR});
                     python.stdout.on('data', function(data) {
                         console.log('stdout: ' + data);
                     });
@@ -201,7 +201,7 @@ module.exports = {
     getSubtitleList: async function(pIndex, videoUUID) {
         try {
             // Check video existence
-            const filePath = path.join(VIDEO_DIR, videoUUID, pIndex.toString());
+            const filePath = path.join(VIDEO_DIR, videoUUID, pIndex);
             if (fs.existsSync(filePath)) {
                 const dirContents = fs.readdirSync(filePath);
 
@@ -223,7 +223,7 @@ module.exports = {
     getProcessedSubtitles: async function(pIndex, videoUUID) {
         try {
             // Check video existence
-            const filePath = path.join(VIDEO_DIR, videoUUID, pIndex.toString());
+            const filePath = path.join(VIDEO_DIR, videoUUID, pIndex);
             if (fs.existsSync(filePath)) {
                 const rawData = fs.readFileSync(path.join(filePath, `data/options_${videoUUID}.json`)).toString();
                 const options = JSON.parse(rawData);

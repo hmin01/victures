@@ -84,7 +84,7 @@ router.post('/step/info', (req, res) => {
                         subtitls: result.subtitls
                     };
                     // Save process start time in session
-                    req.session.video.pIndex = Date.now();
+                    req.session.video.pIndex = (Date.now()).toString();
                     // Return
                     res.json({result: true, message: req.session.video.info});
                 } else {
@@ -256,7 +256,7 @@ router.get('/step/select/frames', async (req, res) => {
         res.json({result: false, message: "Invalid process flow"});
     } else {
         // Save extract info
-        const frameDir = path.join(__dirname, "../public/dist/", req.session.video.info.id, req.session.video.pIndex.toString(), "frames");
+        const frameDir = path.join(__dirname, "../public/dist/", req.session.video.info.id, req.session.video.pIndex, "frames");
         if (fs.existsSync(frameDir)) {
             // Get subtitle
             const result = await video.getProcessedSubtitles(req.session.video.pIndex, req.session.video.info.id);
