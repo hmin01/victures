@@ -1,7 +1,7 @@
 const db = require('../helper/db/query')
 
 module.exports = {
-    addInfo: async function(videoInfo) {
+    addInfo: async function(pIndex, videoInfo) {
         try {
             // 저장된 Publisher인지 확인
             const selectQ = `select publisher_id from publisher where publisher_name="${videoInfo.publisher}";`;
@@ -21,8 +21,8 @@ module.exports = {
                     publisherID = selectResult.message[0].publisher_id;
                 }
                 // 영상 정보 저장
-                let insertQ = `insert into video (video_uuid, video_url, video_title, duration, upload_date, view_count, description, thumbnail, publisher_id) values ("${videoInfo.id}", "${videoInfo.url}", "${videoInfo.title}", ${videoInfo.duration}, "${videoInfo.uploadDate}", ${videoInfo.viewCount}, "${videoInfo.description}", "${videoInfo.thumbnail}", ${publisherID}) 
-                on duplicate key update video_title=values(video_title), upload_date=values(upload_date), view_count=values(view_count), description=values(description), thumbnail=values(thumbnail);`;
+                let insertQ = `insert into video (p_index, video_uuid, video_url, video_title, duration, upload_date, view_count, description, thumbnail, publisher_id) values (${pIndex}, "${videoInfo.id}", "${videoInfo.url}", "${videoInfo.title}", ${videoInfo.duration}, "${videoInfo.uploadDate}", ${videoInfo.viewCount}, "${videoInfo.description}", "${videoInfo.thumbnail}", ${publisherID});`;
+                // on duplicate key update video_title=values(video_title), upload_date=values(upload_date), view_count=values(view_count), description=values(description), thumbnail=values(thumbnail);`;
                 let insertResult = await db.querySync(insertQ);
                 if (!insertResult.result) {
                     return {result: false, message: insertResult.message};
@@ -84,10 +84,10 @@ module.exports = {
             return {result: false, message: err.message};
         }
     },
-    getVideoID: async function(videoUUID) {
+    getVideoID: async function(pIndex, videoUUID) {
         try {
             // 11자리의 Video UUID를 이용하여 Video ID 검색
-            const selectQ = `select video_id from video where video_uuid="${videoUUID}";`;
+            const selectQ = `select video_id from video where video_uuid="${videoUUID}" and p_index=${pIndex};`;
             const selectResult = await db.selectSync(selectQ);
             if (selectResult.result) {
                 if (selectResult.message.length > 0) {
@@ -128,7 +128,6 @@ module.exports = {
         try {
             const limit = 30, offset = page * 30;
             const selectQ = `select a.video_id, a.video_url, a.video_title, a.thumbnail, a.duration, a.upload_date, a.reg_date, a.view_count, b.publisher_name, count(c.frame_id) as frames from video as a inner join publisher as b on a.publisher_id=b.publisher_id inner join frame as c on a.video_id=c.video_id and c.visible=1 group by a.video_id limit ${limit} offset ${offset};`;
-            console.log(selectQ);
             return await db.selectSync(selectQ);
         } catch (err) {
             return {result: false, message: err.message};

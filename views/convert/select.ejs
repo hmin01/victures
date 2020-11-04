@@ -273,7 +273,6 @@
                         $('#selected-frame-count').text(res.frames.length);
 
                         FRAMES_DATA = res.data;
-                        console.log(FRAMES_DATA)
 
                         let index = 1;
                         for (const elem of res.frames) {
@@ -368,7 +367,6 @@
                         selected[index] = false;
                     }
                 });
-                console.log(selected)
 
                 $.ajax({
                     type: "POST",

@@ -83,6 +83,9 @@ router.post('/step/info', (req, res) => {
                         durationString: hour === 0 ? `${munite}분 ${seconds}초` : `${hour}시 ${munite}분 ${seconds}초`,
                         subtitls: result.subtitls
                     };
+                    // Save process start time in session
+                    req.session.video.pIndex = Date.now();
+                    // Return
                     res.json({result: true, message: req.session.video.info});
                 } else {
                     res.json(result);
@@ -102,9 +105,9 @@ router.get('/step/process', (req, res) => {
         // Create temp state file
         if (!fs.existsSync(stateDirPath))
             fs.mkdirSync(stateDirPath);
-        fs.writeFileSync(path.join(stateDirPath, `state_download_${req.session.video.info.id}`), "yet");
-        fs.writeFileSync(path.join(stateDirPath, `state_extractKeywords_${req.session.video.info.id}`), "yet");
-        fs.writeFileSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.info.id}`), "yet");
+        fs.writeFileSync(path.join(stateDirPath, `state_download_${req.session.video.pIndex}_${req.session.video.info.id}`), "yet");
+        fs.writeFileSync(path.join(stateDirPath, `state_extractKeywords_${req.session.video.pIndex}_${req.session.video.info.id}`), "yet");
+        fs.writeFileSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.pIndex}_${req.session.video.info.id}`), "yet");
 
         // Render
         res.render('convert/process');
@@ -116,15 +119,15 @@ router.post('/step/download', (req, res) => {
     if (req.session.video === undefined || req.session.video.url === undefined) {
         res.json({result: false, message: "Invalid process flow"});
     } else {
-        video.download(req.session.video.url, function(result) {
+        video.download(req.session.video.pIndex, req.session.video.info.id, req.session.video.url, function(result) {
             // Create temp state file
             if (!fs.existsSync(stateDirPath))
                 fs.mkdirSync(stateDirPath);
 
             if (result.result) {
-                fs.writeFileSync(path.join(stateDirPath, `state_download_${req.session.video.info.id}`), "success");
+                fs.writeFileSync(path.join(stateDirPath, `state_download_${req.session.video.pIndex}_${req.session.video.info.id}`), "success");
             } else {
-                fs.writeFileSync(path.join(stateDirPath, `state_download_${req.session.video.info.id}`), "fail");
+                fs.writeFileSync(path.join(stateDirPath, `state_download_${req.session.video.pIndex}_${req.session.video.info.id}`), "fail");
             }
         });
 
@@ -138,11 +141,11 @@ router.get('/step/state', (req, res) => {
     } else {
         const type = req.query.type;
         // Check exist
-        if (!fs.existsSync(stateDirPath) || !fs.existsSync(path.join(stateDirPath, `state_${type}_${req.session.video.info.id}`))) {
+        if (!fs.existsSync(stateDirPath) || !fs.existsSync(path.join(stateDirPath, `state_${type}_${req.session.video.pIndex}_${req.session.video.info.id}`))) {
             res.json({result: false, message: "Not found state file"});
         } else {
             // Get temp state file
-            const state = fs.readFileSync(path.join(stateDirPath, `state_${type}_${req.session.video.info.id}`)).toString();
+            const state = fs.readFileSync(path.join(stateDirPath, `state_${type}_${req.session.video.pIndex}_${req.session.video.info.id}`)).toString();
             // Save state in session
             req.session.video.state[type] = state;
             // Return
@@ -153,16 +156,30 @@ router.get('/step/state', (req, res) => {
 /* Delete download state file */
 router.delete('/step/state', (req, res) => {
     // Check exist
-    if (fs.existsSync(stateDirPath)
-    && fs.existsSync(path.join(stateDirPath, `state_download_${req.session.video.info.id}`))
-    && fs.existsSync(path.join(stateDirPath, `state_extractKeywords_${req.session.video.info.id}`))
-    && fs.existsSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.info.id}`))) {
-        fs.unlinkSync(path.join(stateDirPath, `state_download_${req.session.video.info.id}`));
-        fs.unlinkSync(path.join(stateDirPath, `state_extractKeywords_${req.session.video.info.id}`));
-        fs.unlinkSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.info.id}`));
-    } else {
-        console.error("Not found state file");
+    let tempPath = path.join(stateDirPath, `state_download_${req.session.video.pIndex}_${req.session.video.info.id}`);
+    if (fs.existsSync(stateDirPath) && fs.existsSync(tempPath)) {
+        fs.unlinkSync(tempPath);
     }
+    tempPath = path.join(stateDirPath, `state_extractKeywords_${req.session.video.pIndex}_${req.session.video.info.id}`);
+    if (fs.existsSync(stateDirPath) && fs.existsSync(tempPath)) {
+        fs.unlinkSync(tempPath);
+    }
+    tempPath = path.join(stateDirPath, `state_extractFrames_${req.session.video.pIndex}_${req.session.video.info.id}`);
+    if (fs.existsSync(stateDirPath) && fs.existsSync(tempPath)) {
+        fs.unlinkSync(tempPath);
+    }
+
+    // Return
+    res.json({result: true});
+});
+/* Delete download file (for error) */
+router.delete('/step/download', (req, res) => {
+    // Check exist
+    const tempPath = path.join(__dirname, `../public/workspace/${req.session.video.pIndex}_${req.session.video.info.id}`);
+    if (fs.existsSync(tempPath)) {
+        fs.rmdirSync(tempPath, {recursive: true});
+    }
+
     // Return
     res.json({result: true});
 });
@@ -172,15 +189,15 @@ router.post('/step/extract/keywords', (req, res) => {
     if (req.session.video === undefined || req.session.video.url === undefined) {
         res.json({result: false, message: "Invalid process flow"});
     } else {
-        video.extractKeywords(req.session.video.info, function(result) {
+        video.extractKeywords(req.session.video.pIndex, req.session.video.info, function(result) {
             // Create temp state file
             if (!fs.existsSync(stateDirPath))
                 fs.mkdirSync(stateDirPath);
 
             if (result.result) {
-                fs.writeFileSync(path.join(stateDirPath, `state_extractKeywords_${req.session.video.info.id}`), "success");
+                fs.writeFileSync(path.join(stateDirPath, `state_extractKeywords_${req.session.video.pIndex}_${req.session.video.info.id}`), "success");
             } else {
-                fs.writeFileSync(path.join(stateDirPath, `state_extractKeywords_${req.session.video.info.id}`), "fail");
+                fs.writeFileSync(path.join(stateDirPath, `state_extractKeywords_${req.session.video.pIndex}_${req.session.video.info.id}`), "fail");
                 console.error(result.message);
             }
         });
@@ -194,13 +211,13 @@ router.post('/step/extract/frames', (req, res) => {
     if (req.session.video === undefined || req.session.video.url === undefined) {
         res.json({result: false, message: "Invalid process flow"});
     } else {
-        video.extractFrames(req.session.video.info.id, function(result) {
+        video.extractFrames(req.session.video.pIndex, req.session.video.info.id, function(result) {
             // Create temp state file
             if (!fs.existsSync(stateDirPath))
                 fs.mkdirSync(stateDirPath);
 
             if (result.result) {
-                fs.writeFileSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.info.id}`), "success");
+                fs.writeFileSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.pIndex}_${req.session.video.info.id}`), "success");
                 // // Save extract info
                 // const frameDir = path.join(__dirname, "../public/dist/videos/", req.session.video.info.id, "frames");
                 // if (fs.existsSync(frameDir)) {
@@ -214,7 +231,7 @@ router.post('/step/extract/frames', (req, res) => {
                 //     console.error("extract frames error");
                 // }
             } else {
-                fs.writeFileSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.info.id}`), "fail");
+                fs.writeFileSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.pIndex}_${req.session.video.info.id}`), "fail");
                 console.error(result.message);
             }
         });
@@ -239,10 +256,10 @@ router.get('/step/select/frames', async (req, res) => {
         res.json({result: false, message: "Invalid process flow"});
     } else {
         // Save extract info
-        const frameDir = path.join(__dirname, "../public/dist/videos/", req.session.video.info.id, "frames");
+        const frameDir = path.join(__dirname, "../public/dist/", req.session.video.info.id, req.session.video.pIndex.toString(), "frames");
         if (fs.existsSync(frameDir)) {
             // Get subtitle
-            const result = await video.getProcessedSubtitles(req.session.video.info.id);
+            const result = await video.getProcessedSubtitles(req.session.video.pIndex, req.session.video.info.id);
             if (result.result) {
                 // Get frames
                 const ls = fs.readdirSync(frameDir);
@@ -250,7 +267,7 @@ router.get('/step/select/frames', async (req, res) => {
                     const index = (elem.replace("frame_", "").split('.'))[0];
                     return {
                         seq: Number(index),
-                        url: `/source/${req.session.video.info.id}/frames/${elem}`
+                        url: `/source/${req.session.video.info.id}/${req.session.video.pIndex}/frames/${elem}`
                     };
                 });
                 // Sort frames by index
@@ -273,14 +290,14 @@ router.post('/step/save', async (req, res) => {
         res.json({result: false, message: "Invalid process flow"});
     } else {
         // Save video info
-        let saveResult = await videoDB.addInfo(req.session.video.info);
+        let saveResult = await videoDB.addInfo(req.session.video.pIndex, req.session.video.info);
         if (!saveResult.result) {
             res.json({result: false, message: saveResult.message});
             return;
         }
         // Get video id using uuid
         let videoID = null;
-        let selectResult = await videoDB.getVideoID(req.session.video.info.id);
+        let selectResult = await videoDB.getVideoID(req.session.video.pIndex, req.session.video.info.id);
         if (selectResult.result) {
             if (selectResult.message.length === 0) {
                 res.json({result: false, message: "Not found video data"});
@@ -292,23 +309,23 @@ router.post('/step/save', async (req, res) => {
             res.json({result: false, message: selectResult.message});
             return;
         }
-        // Save subtitle
-        selectResult = await video.getSubtitleList(req.session.video.info.id);
-        if (selectResult.result) {
-            if (selectResult.message.length > 0) {
-                saveResult = await videoDB.addSubtitle(videoID, `/public/dist/videos/${req.session.video.info.id}/`, selectResult.message);
-                if (!selectResult.result) {
-                    res.json({result: false, message: saveResult.message});
-                    return;
-                }
-            }
-        } else {
-            res.json({result: false, message: selectResult.message});
-            return;
-        }
+        // // Save subtitle
+        // selectResult = await video.getSubtitleList(req.session.video.info.id);
+        // if (selectResult.result) {
+        //     if (selectResult.message.length > 0) {
+        //         saveResult = await videoDB.addSubtitle(videoID, `/public/dist/videos/${req.session.video.info.id}/`, selectResult.message);
+        //         if (!selectResult.result) {
+        //             res.json({result: false, message: saveResult.message});
+        //             return;
+        //         }
+        //     }
+        // } else {
+        //     res.json({result: false, message: selectResult.message});
+        //     return;
+        // }
         // Save processed subtitle
         let processedSubtitle = null;
-        selectResult = await video.getProcessedSubtitles(req.session.video.info.id);
+        selectResult = await video.getProcessedSubtitles(req.session.video.pIndex, req.session.video.info.id);
         if (selectResult.result) {
             if (selectResult.message.length > 0) {
                 processedSubtitle = selectResult.message;
@@ -328,7 +345,7 @@ router.post('/step/save', async (req, res) => {
             const selected = JSON.parse(req.body.selected);
             for (let index = 1; index <= processedSubtitle.length; index++) {
                 const isSelected = selected[index] ? 1 : 0;
-                frameData.push([videoID, index,  processedSubtitle[index - 1].frameIndex, `/source/${req.session.video.info.id}/frames/frame_${index}.png`, isSelected]);
+                frameData.push([videoID, index,  processedSubtitle[index - 1].frameIndex, `/source/${req.session.video.info.id}/${req.session.video.pIndex}/frames/frame_${index}.png`, isSelected]);
             }
 
             saveResult = await videoDB.addFrame(frameData);
@@ -339,6 +356,11 @@ router.post('/step/save', async (req, res) => {
         } else {
             res.json({result: false, message: "save data error"});
             return;
+        }
+        // Remove workspace directory
+        const tempPath = path.join(__dirname, `../public/workspace/${req.session.video.pIndex}_${req.session.video.info.id}`);
+        if (fs.existsSync(tempPath)) {
+            fs.rmdirSync(tempPath, {recursive: true});
         }
         // Save complete
         res.json({result: true});
