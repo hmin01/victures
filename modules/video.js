@@ -96,7 +96,7 @@ module.exports = {
                     } else {
                         const tempPath = path.join(WORKSPACE_DIR, `${pIndex}_${videoUUID}`);
                         if (fs.existsSync(tempPath)) {
-                            fs.rmdirSync({recursive: true});
+                            fs.rmdirSync(tempPath, {recursive: true});
                         }
 
                         callback({result: false, message: "Youtube-dl error"});
