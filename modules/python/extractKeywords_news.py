@@ -38,6 +38,10 @@ else:
         WORKSPACE_DIR = os.path.join(CURRENT_PATH, '../../public/workspace/', f'{PROCESS_INDEX}_{VIDEO_ID}/')
         ## set temp file path
         TEMP_FILE = os.path.join(WORKSPACE_DIR, f'temp_{PROCESS_INDEX}_{VIDEO_ID}.txt')
+        ## 데이터 정보를 저장하는 기본 폴더 존재 여부 및 생성
+        baseDirPath = os.path.join(SOURCE_DIR)
+        if os.path.isdir(baseDirPath) == False:
+            os.mkdir(baseDirPath)
         ## set options and keywords file path
         versionDirPath = os.path.join(SOURCE_DIR, f'{VIDEO_ID}/{PROCESS_INDEX}')
         if os.path.isdir(versionDirPath) == False:
