@@ -102,9 +102,18 @@ router.get('/step/process', (req, res) => {
     if (req.session.video === undefined || req.session.video.url === undefined) {
         res.redirect(401, '/convert/step/import');
     } else {
-        // Create temp state file
+        // 작업 폴더들이 존재하는지 여부를 확인하고 없을 경우, 폴더 생성
+        const workspaceDirPath = path.join(__dirname, "../public/workspace");
+        if (!fs.existsSync(workspaceDirPath)) {
+            fs.mkdirSync(workspaceDirPath);
+        }
+        const distDriPath = path.join(__dirname, "../public/dist");
+        if (!fs.existsSync(distDriPath)) {
+            fs.mkdirSync(distDriPath);
+        }
         if (!fs.existsSync(stateDirPath))
             fs.mkdirSync(stateDirPath);
+        // Create temp state file
         fs.writeFileSync(path.join(stateDirPath, `state_download_${req.session.video.pIndex}_${req.session.video.info.id}`), "yet");
         fs.writeFileSync(path.join(stateDirPath, `state_extractKeywords_${req.session.video.pIndex}_${req.session.video.info.id}`), "yet");
         fs.writeFileSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.pIndex}_${req.session.video.info.id}`), "yet");
