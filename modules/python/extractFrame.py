@@ -19,7 +19,7 @@ VAL_PROC_INDEX = None
 ## 인자를 이용하여 처리를 위한 경로 및 값을 설정
 if len(sys.argv) != 3:
     print("[PYTHON ERROR] The number of arguments does not match.")
-    exit(2)
+    exit(1)
 else:
     ## 전달 받은 인자(중복된 비디오 처리를 위한 PINDEX)에서 값 추출
     VAL_PROC_INDEX = sys.argv[1]
@@ -30,21 +30,21 @@ else:
         VAL_VIDEO_EXT = sys.argv[2][index:]
     else:
         print("[PYTHON ERROR] arguments does not match.")
-        exit(2)
+        exit(1)
     ## Workspace 경로 설정 (다운받은 영상 및 자막이 존재하는 폴더)
     DIR_WORKSPACE = os.path.join(CURRENT_PATH, "../../public/workspace", f"{VAL_PROC_INDEX}_{VAL_VIDEO_ID}")
     ## 처리 결과(추출된 키워드 및 자막 정보)를 저장하기 위한 각종 폴더 존재 여부 확인 및 생성
     DIR_DISTINATION = os.path.join(CURRENT_PATH, "../../public/dist/")
     if os.path.isdir(DIR_DISTINATION) == False:
-        exit(3)
+        exit(2)
     DIR_DISTINATION = os.path.join(DIR_DISTINATION, f"{VAL_VIDEO_ID}")
     if os.path.isdir(DIR_DISTINATION) == False:
-        exit(3)
+        exit(2)
     DIR_DISTINATION = os.path.join(DIR_DISTINATION, f"{VAL_PROC_INDEX}")
     if os.path.isdir(DIR_DISTINATION) == False:
-        exit(3)
+        exit(2)
     if os.path.isdir(os.path.join(DIR_DISTINATION, "data")) == False:
-        exit(3)
+        exit(2)
     ## 가공된 자막 데이터가 저장된 파일 경로 설정
     FILE_PROCESSED = os.path.join(DIR_DISTINATION, "data", "processed.json")
     ## 변수 제거
@@ -66,16 +66,15 @@ if os.path.isdir(DIR_OUTPUT) == False:
 # [Step 3.2] 프레임 추출을 위한 파라미터 값 생성
 FILE_SRC = os.path.join(DIR_WORKSPACE, f"{VAL_VIDEO_ID}{VAL_VIDEO_EXT}")
 FILE_OUT = f"{DIR_OUTPUT}/frame_%d.png"
-## vfilter 생성
-filterArgs = 'select='
+## vFilter 생성
+vFilters = []
 for i, elem in enumerate(sentData):
-    if elem.extract == 'false':
+    if elem["extract"] == 'false':
         continue
-
     fI = elem["frameIndex"]
-    filterArgs += f"'eq(n,{fI})'"
-    if i < len(sentData) - 1:
-        filterArgs += "+"
+    vFilters.append(f"'eq(n,{fI})'")
+## frame 추출을 위한 filter 옵션 생성
+filterArgs = "select=" + "+".join(vFilters)
 ## ffmpeg 옵션 생성
 args = ['ffmpeg', '-y', '-i', FILE_SRC, '-vf', filterArgs, '-vcodec', 'png', '-vsync', '0', FILE_OUT]
 # [Step 3.3] FFMPEG 실행

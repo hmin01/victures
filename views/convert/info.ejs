@@ -256,7 +256,7 @@
         <script>
             $(document).ready(() => {
                 // Subtitle list
-                const subtitles = [];
+                let subtitles = null;
                 // Get video info (using session)
                 $.ajax({
                     type: "POST",
