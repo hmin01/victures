@@ -3,3 +3,6 @@ class Subtitle:
         self.start = start
         self.end = end
         self.content = content
+
+    def get(self):
+        return {"start": self.start, "end": self.end, "content": self.content}

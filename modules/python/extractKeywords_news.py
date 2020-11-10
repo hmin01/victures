@@ -5,7 +5,7 @@ import json
 
 from kiwipiepy import Kiwi
 from IOHandler import IOHandler
-from extractSubtitle import extractSubtitle
+from Preprocessing import Preprocessing
 
 ## pos list
 POS_LIST = ["NNG", "NR"]
@@ -57,14 +57,24 @@ else:
 # [Step 1] Read file
 subtitleFile = os.path.join(WORKSPACE_DIR, f'{VIDEO_ID}.ko.srt')
 
-# [Step 2] Parse '.srt' and general subtitles
-subtitles = extractSubtitle(subtitleFile)
+# [Step 2.1] Read '.srt' file
+preprocessing = Preprocessing()
+result = preprocessing.read(subtitleFile)
+if not result:
+    print("failed read file")
+    exit(4)
+# [Step 2.2] Preprocessing subtitles
+result = preprocessing.processingSubtitle()
+if not result:
+    print("failed preprocessing subtitles")
+    exit(5)
+
 del subtitleFile
 
 # [Step 3] Extract sentences and save sentences in temp file
 sentences = []
 with open(TEMP_FILE, 'w') as file:
-    for elem in subtitles:
+    for elem in preprocessing.subtitles:
         sentences.append(elem.content)
         file.write(elem.content)
 del file
@@ -129,7 +139,7 @@ del file
 
 # [Step 6.1] Analysis subtitls
 analyzedSentences = []
-for sentence in subtitles:
+for sentence in preprocessing.subtitles:
     ## analysis
     result = machine.analyze(sentence.content)
     ## extract words
@@ -145,14 +155,13 @@ for sentence in subtitles:
 # [Step 6.2] sort Analyzed data
 sortedAnalyzedSentences = sorted(analyzedSentences, key=lambda x: x['score'], reverse=True)
 # [Step 6.3] Extract analyzed data (total sentences count 50%)
-end = round((len(subtitles) * 0.5))
+end = round((len(preprocessing.subtitles) * 0.5))
 finalData = sortedAnalyzedSentences[:end]
 # [Step 6.4] Sort by timestamp
 sortedFinalData = sorted(finalData, key=lambda x: x['frameIndex'])
 ## clear variable
 del end
 del analyzedSentences
-del subtitles
 del machine
 del keywords
 del finalData

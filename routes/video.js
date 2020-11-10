@@ -1,9 +1,33 @@
+const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const router = express.Router();
 // DB
 const videoDB = require('../model/video');
 
 router.get('/', async (req, res) => {
+    if (req.session.video !== undefined && req.session.video.pIndex !== undefined && req.session.video.info !== undefined) {
+        // Check exist (video and subtitles)
+        let tempPath = path.join(__dirname, `../public/workspace/${req.session.video.pIndex}_${req.session.video.info.id}`);
+        if (fs.existsSync(tempPath)) {
+            fs.rmdirSync(tempPath, {recursive: true});
+        }
+        // Check exist (state file)
+        const stateDirPath = path.join(__dirname, "../public/temp");
+        tempPath = path.join(stateDirPath, `state_download_${req.session.video.pIndex}_${req.session.video.info.id}`);
+        if (fs.existsSync(stateDirPath) && fs.existsSync(tempPath)) {
+            fs.unlinkSync(tempPath);
+        }
+        tempPath = path.join(stateDirPath, `state_extractKeywords_${req.session.video.pIndex}_${req.session.video.info.id}`);
+        if (fs.existsSync(stateDirPath) && fs.existsSync(tempPath)) {
+            fs.unlinkSync(tempPath);
+        }
+        tempPath = path.join(stateDirPath, `state_extractFrames_${req.session.video.pIndex}_${req.session.video.info.id}`);
+        if (fs.existsSync(stateDirPath) && fs.existsSync(tempPath)) {
+            fs.unlinkSync(tempPath);
+        }
+    }
+    
     delete req.session.video;
     res.render('video');
 });

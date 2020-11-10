@@ -81,7 +81,7 @@ router.post('/step/info', (req, res) => {
                         averageRating: result.videoInfo.average_rating,
                         duration: result.videoInfo.duration,
                         durationString: hour === 0 ? `${munite}분 ${seconds}초` : `${hour}시 ${munite}분 ${seconds}초`,
-                        subtitls: result.subtitls
+                        subtitles: result.subtitles
                     };
                     // Save process start time in session
                     req.session.video.pIndex = (Date.now()).toString();
@@ -227,18 +227,6 @@ router.post('/step/extract/frames', (req, res) => {
 
             if (result.result) {
                 fs.writeFileSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.pIndex}_${req.session.video.info.id}`), "success");
-                // // Save extract info
-                // const frameDir = path.join(__dirname, "../public/dist/videos/", req.session.video.info.id, "frames");
-                // if (fs.existsSync(frameDir)) {
-                //     const ls = fs.readdirSync(frameDir);
-                //     req.session.video.frames = {
-                //         dir: frameDir,
-                //         count: ls.length
-                //     };
-                // } else {
-                //     fs.writeFileSync(path.join(stateDirPath, `state_extract_${req.session.video.info.id}`), "fail");
-                //     console.error("extract frames error");
-                // }
             } else {
                 fs.writeFileSync(path.join(stateDirPath, `state_extractFrames_${req.session.video.pIndex}_${req.session.video.info.id}`), "fail");
                 console.error(result.message);
