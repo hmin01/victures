@@ -20,21 +20,12 @@ FILE_OPTIONS = None
 ## Various value for processing
 VAL_VIDEO_ID = None
 VAL_PROC_INDEX = None
-## 폴더 존재 여부 확인 함수 (없을 경우, 생성)
-def checkDir(path):
-    try:
-        if os.path.isdir(path) == False:
-            os.mkdir(path)
-        return True
-    except Exception as err:
-        print(f"[PYTHON ERROR] {err}")
-        return False
 
 # [Step 1] Check arguments
 ## 인자를 이용하여 처리를 위한 경로 및 값을 설정
 if len(sys.argv) != 3:
     print("[PYTHON ERROR] The number of arguments does not match.")
-    exit(2)
+    exit(1)
 else:
     ## 전달 받은 인자(중복된 비디오 처리를 위한 PINDEX)에서 값 추출
     VAL_PROC_INDEX = sys.argv[1]
@@ -44,31 +35,17 @@ else:
         VAL_VIDEO_ID = sys.argv[2][:index]
     else:
         print("[PYTHON ERROR] arguments does not match.")
-        exit(2)
+        exit(1)
     ## Workspace 경로 설정 (다운받은 영상 및 자막이 존재하는 폴더)
     DIR_WORKSPACE = os.path.join(CURRENT_PATH, "../../public/workspace", f"{VAL_PROC_INDEX}_{VAL_VIDEO_ID}")
-    ## 처리 결과(추출된 키워드 및 자막 정보)를 저장하기 위한 각종 폴더 존재 여부 확인 및 생성
-    DIR_DISTINATION = os.path.join(CURRENT_PATH, "../../public/dist/")
-    if checkDir(DIR_DISTINATION) == False:
-        exit(3)
-    DIR_DATA = os.path.join(DIR_DISTINATION, f"{VAL_VIDEO_ID}")
-    if checkDir(DIR_DATA) == False:
-        exit(3)
-    DIR_DATA = os.path.join(DIR_DATA, f"{VAL_PROC_INDEX}")
-    if checkDir(DIR_DATA) == False:
-        exit(3)
-    DIR_DATA = os.path.join(DIR_DATA, "data")
-    if checkDir(DIR_DATA) == False:
-        exit(3)
     ## 처리 과정에서 발생하는 데이터를 임시로 저장하기 위한 Temp 파일 경로 설정
-    FILE_TEMP = os.path.join(DIR_WORKSPACE, f"temp_{VAL_PROC_INDEX}_{VAL_VIDEO_ID}.txt")
+    FILE_TEMP = os.path.join(DIR_WORKSPACE, f"temp.txt")
     ## 추출된 키워드를 저장하기 위한 파일 경로 설정
-    FILE_KEYWORDS = os.path.join(DIR_DATA, "keywords.json")
+    FILE_KEYWORDS = os.path.join(DIR_WORKSPACE, "keywords.json")
     ## 가공된 자막 데이터를 저장하기 위한 파일 경로 설정
-    FILE_OPTIONS = os.path.join(DIR_DATA, "processed.json")
+    FILE_OPTIONS = os.path.join(DIR_WORKSPACE, "processed.json")
     ## 변수 제거
     del index
-    del DIR_DATA
 
 # [Step 2.1] 자막 파일 경로 설정 (.srt)
 subtitlePath = os.path.join(DIR_WORKSPACE, f"{VAL_VIDEO_ID}.ko.srt")
@@ -77,17 +54,17 @@ preprocessing = Preprocessing()
 result = preprocessing.read(subtitlePath)
 if result == False:
     print("[PYTHON ERROR] Failed read file")
-    exit(4)
+    exit(2)
 # [Step 2.3] 읽어온 자막 파일을 이용하여 전처리
 result = preprocessing.processingSubtitle()
 if result == False:
     print("[PYTHON ERROR] Failed preprocessing subtitle")
-    exit(4)
+    exit(2)
 del subtitlePath
 del result
 
 # [Step 3] 가공된 자막에서 문장을 가져오고 분석을 위해 temp 파일에 저장
-with open(FILE_TEMP, 'w') as file:
+with open(FILE_TEMP, 'w', encoding="utf-8") as file:
     for elem in preprocessing.subtitles:
         file.write(elem.content)
 
@@ -96,13 +73,13 @@ machine = Kiwi()
 # [Step 4.2] 사용자 지정 사전 파일 존재 여부 확인 및 생성
 FILE_DICTIONARY = os.path.join(CURRENT_PATH, "./src/customDictionary.txt")
 if os.path.isfile(FILE_DICTIONARY) == False:
-    file = open(FILE_DICTIONARY, 'w')
+    file = open(FILE_DICTIONARY, 'w', encoding="utf-8")
     file.close()
 # [Step 4.3] 사용자 지정 사전 불러오기
 machine.load_user_dictionary(FILE_DICTIONARY)
 # [Step 4.4] temp파일(자막의 문장들이 저장되어 있는 파일)로부터 새로운 단어 추출 및 사용자 지정 사전에 추가
 tempFile = IOHandler(FILE_TEMP, 'r')
-dictionary = open(FILE_DICTIONARY, 'a')
+dictionary = open(FILE_DICTIONARY, 'a', encoding="utf-8")
 words = machine.extract_add_words(tempFile.read, 6)
 ## 추출된 새로운 단어를 사용자 지정 사전에 형식(단어\t품사\n) 에 맞춰 저장
 for elem in words:

@@ -195,10 +195,7 @@
             $.get(`/video/pictures/list?id=${VIDEO_ID}`, function(res) {
                 if (res.result) {
                     TOTAL_COUNT = res.frames.length;
-                    SUBTITLES = res.subtitles.filter(function(elem) {
-                        console.log(elem);
-                        return JSON.parse(elem.extract);
-                    });
+                    SUBTITLES = res.subtitles;
 
                     let index = 0;
                     for (const elem of res.frames) {

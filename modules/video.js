@@ -220,14 +220,29 @@ module.exports = {
             return {result: false, message: err.meesage};
         }
     },
+    getKeywords: async function(pIndex, videoUUID) {
+        try {
+            // Check video existence
+            const filePath = path.join(WORKSPACE_DIR, `${pIndex}_${videoUUID}`);
+            if (fs.existsSync(filePath)) {
+                const rawData = fs.readFileSync(path.join(filePath, "keywords.json")).toString();
+                const keywords = JSON.parse(rawData);
+                return {result: true, message: keywords};
+            } else {
+                return {result: false, message: `Not found video directory (ID: ${videoUUID})`};
+            }
+        } catch (err) {
+            return {result: false, message: err.meesage};
+        }
+    },
     getProcessedSubtitles: async function(pIndex, videoUUID) {
         try {
             // Check video existence
-            const filePath = path.join(VIDEO_DIR, videoUUID, pIndex);
+            const filePath = path.join(WORKSPACE_DIR, `${pIndex}_${videoUUID}`);
             if (fs.existsSync(filePath)) {
-                const rawData = fs.readFileSync(path.join(filePath, `data/processed.json`)).toString();
-                const options = JSON.parse(rawData);
-                return {result: true, message: options};
+                const rawData = fs.readFileSync(path.join(filePath, "processed.json")).toString();
+                const processed = JSON.parse(rawData);
+                return {result: true, message: processed};
             } else {
                 return {result: false, message: `Not found video directory (ID: ${videoUUID})`};
             }

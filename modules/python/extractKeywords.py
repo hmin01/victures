@@ -38,7 +38,7 @@ else:
         if os.path.isdir(dataDirPath) == False:
             os.mkdir(dataDirPath)
 
-        KEYWORDS_FILE = os.path.join(dataDirPath, f'./keywords_{VIDEO_ID}.json')
+        KEYWORDS_FILE = os.path.join(CURRENT_PATH, f'./src/keywords_{VIDEO_ID}.json')
         OPTIONES_FILE = os.path.join(dataDirPath, f'./options_{VIDEO_ID}.json')
         del dataDirPath
 
@@ -50,14 +50,14 @@ subtitle = None
 if sys.argv[1] == "True":
     subtitles = extractSubtitle(subtitleFile)
 else:
-    with open(subtitleFile) as file:
+    with open(subtitleFile, 'r', encoding='utf-8') as file:
         srtFile = srt.parse(file)
         subtitles = list(srtFile)
 del subtitleFile
 
 # [Step 3] Extract sentences and save sentences in temp file
 sentences = []
-with open(TEMP_FILE, 'w') as file:
+with open(TEMP_FILE, 'w', encoding='utf-8') as file:
     for elem in subtitles:
         sentences.append(elem.content)
         file.write(elem.content)
@@ -67,7 +67,7 @@ del file
 machine = Kiwi()
 # [Step 4.2.1] If not exist, create file
 if os.path.isfile(DICTIONARY_PATH) == False:
-    file = open(DICTIONARY_PATH, 'w')
+    file = open(DICTIONARY_PATH, 'w', encoding='utf-8')
     file.close()
     del file
 # [Step 4.2.2] Load custom dictionary
@@ -75,7 +75,7 @@ machine.load_user_dictionary(DICTIONARY_PATH)
 # [Step 4.3] Read sentence file
 file = IOHandler(TEMP_FILE, 'r')
 # [Step 4.4] Open custom dictionary file
-dictionary = open(DICTIONARY_PATH, 'a')
+dictionary = open(DICTIONARY_PATH, 'a', encoding='utf-8')
 # [Step 4.5] Extract words
 words = machine.extract_add_words(file.read, 8)
 for elem in words:

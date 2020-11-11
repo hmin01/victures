@@ -30,7 +30,7 @@ class Preprocessing:
                 ## 확장자 .srt 여부 확인 및 파일 읽기
                 extension = path[(extensionIndex+1):]
                 if extension == "srt":
-                    with open(path, 'r') as file:
+                    with open(path, 'r', encoding="utf-8") as file:
                         srtGen = srt.parse(file)
                         self.__srtData = list(srtGen)
                     return True

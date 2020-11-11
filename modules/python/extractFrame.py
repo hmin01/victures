@@ -14,6 +14,15 @@ FILE_PROCESSED = None
 VAL_VIDEO_ID = None
 VAL_VIDEO_EXT = None
 VAL_PROC_INDEX = None
+## 폴더 존재 여부 확인 함수 (없을 경우, 생성)
+def checkDir(path):
+    try:
+        if os.path.isdir(path) == False:
+            os.mkdir(path)
+        return True
+    except Exception as err:
+        print(f"[PYTHON ERROR] {err}")
+        return False
 
 # [Step 1] Check arguments
 ## 인자를 이용하여 처리를 위한 경로 및 값을 설정
@@ -35,18 +44,16 @@ else:
     DIR_WORKSPACE = os.path.join(CURRENT_PATH, "../../public/workspace", f"{VAL_PROC_INDEX}_{VAL_VIDEO_ID}")
     ## 처리 결과(추출된 키워드 및 자막 정보)를 저장하기 위한 각종 폴더 존재 여부 확인 및 생성
     DIR_DISTINATION = os.path.join(CURRENT_PATH, "../../public/dist/")
-    if os.path.isdir(DIR_DISTINATION) == False:
+    if checkDir(DIR_DISTINATION) == False:
         exit(2)
     DIR_DISTINATION = os.path.join(DIR_DISTINATION, f"{VAL_VIDEO_ID}")
-    if os.path.isdir(DIR_DISTINATION) == False:
+    if checkDir(DIR_DISTINATION) == False:
         exit(2)
     DIR_DISTINATION = os.path.join(DIR_DISTINATION, f"{VAL_PROC_INDEX}")
-    if os.path.isdir(DIR_DISTINATION) == False:
-        exit(2)
-    if os.path.isdir(os.path.join(DIR_DISTINATION, "data")) == False:
+    if checkDir(DIR_DISTINATION) == False:
         exit(2)
     ## 가공된 자막 데이터가 저장된 파일 경로 설정
-    FILE_PROCESSED = os.path.join(DIR_DISTINATION, "data", "processed.json")
+    FILE_PROCESSED = os.path.join(DIR_WORKSPACE, "processed.json")
     ## 변수 제거
     del index
 
@@ -59,13 +66,9 @@ except Exception as err:
     print(f"[PYTHON ERROR] {err}")
     exit(3)
 
-# [Step 3.1] 추출된 프레임을 저장하기 위한 frames 폴더 생성
-DIR_OUTPUT = os.path.join(DIR_DISTINATION, "frames")
-if os.path.isdir(DIR_OUTPUT) == False:
-    os.mkdir(DIR_OUTPUT)
-# [Step 3.2] 프레임 추출을 위한 파라미터 값 생성
+# [Step 3.1] 프레임 추출을 위한 파라미터 값 생성
 FILE_SRC = os.path.join(DIR_WORKSPACE, f"{VAL_VIDEO_ID}{VAL_VIDEO_EXT}")
-FILE_OUT = f"{DIR_OUTPUT}/frame_%d.png"
+FILE_OUT = f"{DIR_DISTINATION}/frame_%d.png"
 ## vFilter 생성
 vFilters = []
 for i, elem in enumerate(sentData):
@@ -77,7 +80,7 @@ for i, elem in enumerate(sentData):
 filterArgs = "select=" + "+".join(vFilters)
 ## ffmpeg 옵션 생성
 args = ['ffmpeg', '-y', '-i', FILE_SRC, '-vf', filterArgs, '-vcodec', 'png', '-vsync', '0', FILE_OUT]
-# [Step 3.3] FFMPEG 실행
+# [Step 3.2] FFMPEG 실행
 result = subprocess.call(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 # Exit

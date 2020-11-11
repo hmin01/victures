@@ -21,8 +21,8 @@ module.exports = {
                     publisherID = selectResult.message[0].publisher_id;
                 }
                 // 영상 정보 저장
-                let insertQ = `insert into video (p_index, video_uuid, video_url, video_title, duration, upload_date, view_count, description, thumbnail, publisher_id) values (${Number(pIndex)}, "${videoInfo.id}", "${videoInfo.url}", "${videoInfo.title}", ${videoInfo.duration}, "${videoInfo.uploadDate}", ${videoInfo.viewCount}, "${videoInfo.description}", "${videoInfo.thumbnail}", ${publisherID});`;
-                // on duplicate key update video_title=values(video_title), upload_date=values(upload_date), view_count=values(view_count), description=values(description), thumbnail=values(thumbnail);`;
+                let insertQ = `insert into video (p_index, video_uuid, video_url, video_title, duration, upload_date, view_count, description, thumbnail, publisher_id) values (${Number(pIndex)}, "${videoInfo.id}", "${videoInfo.url}", "${videoInfo.title}", ${videoInfo.duration}, "${videoInfo.uploadDate}", ${videoInfo.viewCount}, "${videoInfo.description}", "${videoInfo.thumbnail}", ${publisherID}) 
+                on duplicate key update video_title=values(video_title), upload_date=values(upload_date), view_count=values(view_count), description=values(description), thumbnail=values(thumbnail), publisher_id=values(publisher_id);`;
                 let insertResult = await db.querySync(insertQ);
                 if (!insertResult.result) {
                     return {result: false, message: insertResult.message};
@@ -47,6 +47,15 @@ module.exports = {
             return {result: false, message: err.message};
         }
     },
+    addKeyword: async function(keywordList) {
+        try {
+            // Query
+            const insertQ = `insert into keyword (video_id, keyword_name, frequency) values ? on duplicate key update keyword_name=values(keyword_name), frequency=values(frequency);`;
+            return await db.bulkSync(insertQ, keywordList);
+        } catch (err) {
+            return {result: false, message: err.message};
+        }
+    },
     addSubtitle: async function(videoID, dirPath, subtitleList) {
         try {
             // bulk 생성
@@ -61,16 +70,12 @@ module.exports = {
             return {result: false, message: err.message};
         }
     },
-    addProcessedSubtitle: async function(videoID, language, subtitleData) {
+    addProcessedSubtitle: async function(subtitleData) {
         try {
-            // bulk 생성
-            const bulk = await subtitleData.map(function(elem, index) {
-                return [videoID, language, (index + 1),  elem.start, elem.end, elem.time, elem.score, elem.sentence];
-            });
             // Query
-            const insertQ = `insert into processed_subtitle (video_id, language, numbering, start_time, end_time, view_time, score, sentence) values ? 
-            on duplicate key update start_time=values(start_time), end_time=values(end_time), view_time=values(view_time), score=values(score), sentence=values(sentence);`;
-            return await db.bulkSync(insertQ, bulk);
+            const insertQ = `insert into processed_subtitle (video_id, language, numbering, start_time, end_time, view_time, score, sentence, is_extract, is_selected) values ? 
+            on duplicate key update start_time=values(start_time), end_time=values(end_time), view_time=values(view_time), score=values(score), sentence=values(sentence), is_extract=values(is_extract), is_selected=values(is_selected);`;
+            return await db.bulkSync(insertQ, subtitleData);
         } catch (err) {
             return {result: false, message: err.message};
         }
@@ -135,7 +140,7 @@ module.exports = {
     },
     getFrames: async function(videoID) {
         try {
-            const selectQ = `select numbering, frame_url from frame where visible=1 and video_id=${videoID} order by numbering ASC;`;
+            const selectQ = `select numbering, frame_url, visible from frame where video_id=${videoID} order by numbering ASC;`;
             return await db.selectSync(selectQ);
         } catch (err) {
             return {result: false, message: err.message};

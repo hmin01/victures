@@ -66,7 +66,9 @@ router.get('/pictures/list', async function(req, res) {
     let frames = [], subtitles = []
     let selectResult = await videoDB.getFrames(videoID);
     if (selectResult.result) {
-        frames = selectResult.message;
+        frames = await selectResult.message.filter(function(elem) {
+            return Number(elem.visible) === 1;
+        });
     } else {
         res.json(selectResult);
         return;
@@ -88,7 +90,7 @@ router.get('/pictures/list', async function(req, res) {
         return;
     }
 
-    await res.json({result: true, frames: frames, subtitles: subtitles});
+    res.json({result: true, frames: frames, subtitles: subtitles});
 });
 
 module.exports = router;
