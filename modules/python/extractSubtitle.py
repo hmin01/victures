@@ -12,7 +12,7 @@ def extractSubtitle(path):
 
     srtData = None
     # 파일 읽기
-    with open(path, 'r') as file:
+    with open(path, 'r', encoding='utf-8') as file:
         # SRT 파일 Parse
         srtGen = srt.parse(file)
         srtData = list(srtGen)

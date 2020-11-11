@@ -272,7 +272,10 @@
                         $('#total-frame-count').text(res.frames.length);
                         $('#selected-frame-count').text(res.frames.length);
 
-                        FRAMES_DATA = res.data;
+                        FRAMES_DATA = res.data.filter(function(elem) {
+                            console.log(elem);
+                            return JSON.parse(elem.extract);
+                        });
 
                         let index = 1;
                         for (const elem of res.frames) {

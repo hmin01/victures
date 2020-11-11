@@ -1,6 +1,6 @@
 class IOHandler:
     def __init__(self, path, type):
-        self.file = open(path, type)
+        self.file = open(path, type, encoding='utf-8')
 
     def read(self, sent_id):
         if sent_id == 0:

@@ -50,7 +50,7 @@ module.exports = {
                                 // Search available subtitles
                                 const allSubtitls = stdout.split(`Available subtitles for ${videoInfo.id}:\nLanguage formats\n`);
                                 if (allSubtitls.length !== 2) {
-                                    callback({result: true, videoInfo: videoInfo, subtitls: []});
+                                    callback({result: true, videoInfo: videoInfo, subtitles: []});
                                 } else {
                                     // Extract available subtitle list
                                     const rows = allSubtitls[1].split('\n');
@@ -61,7 +61,7 @@ module.exports = {
                                             availableSubtitles.push(rowSplit[0].trim());
                                         }
                                     }
-                                    callback({result: true, videoInfo: videoInfo, subtitls: availableSubtitles});
+                                    callback({result: true, videoInfo: videoInfo, subtitles: availableSubtitles});
                                 }
                                 
                             }
@@ -124,7 +124,7 @@ module.exports = {
                 }
 
                 if (videoFile !== null) {
-                    const pythonExe = path.join(PYTHON_DIR, '/extractKeywords_news.py');
+                    const pythonExe = path.join(PYTHON_DIR, '/analysisSubtitle.py');
                     // Child process
                     const python = childProc.spawn('python3', [pythonExe, pIndex, videoFile], {cwd: PYTHON_DIR});
                     python.stdout.on('data', function(data) {
@@ -169,7 +169,7 @@ module.exports = {
                 }
 
                 if (videoFile !== null) {
-                    const pythonExe = path.join(PYTHON_DIR, '/extractFrames.py');
+                    const pythonExe = path.join(PYTHON_DIR, '/extractFrame.py');
                     const python = childProc.spawn('python3', [pythonExe, pIndex, videoFile], {cwd: PYTHON_DIR});
                     python.stdout.on('data', function(data) {
                         console.log('stdout: ' + data);
@@ -220,14 +220,29 @@ module.exports = {
             return {result: false, message: err.meesage};
         }
     },
+    getKeywords: async function(pIndex, videoUUID) {
+        try {
+            // Check video existence
+            const filePath = path.join(WORKSPACE_DIR, `${pIndex}_${videoUUID}`);
+            if (fs.existsSync(filePath)) {
+                const rawData = fs.readFileSync(path.join(filePath, "keywords.json")).toString();
+                const keywords = JSON.parse(rawData);
+                return {result: true, message: keywords};
+            } else {
+                return {result: false, message: `Not found video directory (ID: ${videoUUID})`};
+            }
+        } catch (err) {
+            return {result: false, message: err.meesage};
+        }
+    },
     getProcessedSubtitles: async function(pIndex, videoUUID) {
         try {
             // Check video existence
-            const filePath = path.join(VIDEO_DIR, videoUUID, pIndex);
+            const filePath = path.join(WORKSPACE_DIR, `${pIndex}_${videoUUID}`);
             if (fs.existsSync(filePath)) {
-                const rawData = fs.readFileSync(path.join(filePath, `data/options_${videoUUID}.json`)).toString();
-                const options = JSON.parse(rawData);
-                return {result: true, message: options};
+                const rawData = fs.readFileSync(path.join(filePath, "processed.json")).toString();
+                const processed = JSON.parse(rawData);
+                return {result: true, message: processed};
             } else {
                 return {result: false, message: `Not found video directory (ID: ${videoUUID})`};
             }

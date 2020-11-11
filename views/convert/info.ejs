@@ -255,12 +255,16 @@
         <!-- Local -->
         <script>
             $(document).ready(() => {
+                // Subtitle list
+                let subtitles = null;
                 // Get video info (using session)
                 $.ajax({
                     type: "POST",
                     url: "/convert/step/info",
                     success: function(res) {
                         if (res.result) {
+                            subtitles = res.message.subtitles;
+
                             $('.video-thumbnail').attr('src', res.message.thumbnail);
                             $('.video-content-detail[name="url"]').html(`<p>${printNull(res.message.url)}</p>`);
                             $('.video-content-detail[name="title"]').html(`<p>${printNull(res.message.title)}</p>`);
@@ -302,12 +306,28 @@
                 });
                 // Next step (next button in modal)
                 $('#modal-confirm button[name="next"]').on('click', function() {
-                    const duration = $('.video-content-detail[name="duration"]').data('time');
-                    console.log(duration);
-                    if (duration > (60 * 20)) {
-                        alert("현재 Beta 버전에서는 영상 길이가 최대 20분인 영상만 지원하고 있습니다.");
+                    let nextStep = true;
+                    if (subtitles.length > 0) {
+                        const exist = subtitles.some(function(elem) {
+                            return elem === "ko";
+                        });
+
+                        if (!exist) {
+                            nextStep = false;
+                        }
                     } else {
-                        location.href = '/convert/step/process';
+                        nextStep = false;
+                    }
+
+                    if (nextStep) {
+                        const duration = $('.video-content-detail[name="duration"]').data('time');
+                        if (duration > (60 * 20)) {
+                            alert("현재 Beta 버전에서는 영상 길이가 최대 20분인 영상만 지원하고 있습니다.");
+                        } else {
+                            location.href = '/convert/step/process';
+                        }
+                    } else {
+                        alert("한글 자막이 없는 영상은 현재 지원하고 있지 않습니다.");
                     }
                 });
 
