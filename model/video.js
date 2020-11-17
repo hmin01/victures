@@ -21,10 +21,13 @@ module.exports = {
                     publisherID = selectResult.message[0].publisher_id;
                 }
                 // 영상 정보 저장
+                let videoId = null;
                 let insertQ = `insert into video (p_index, video_uuid, video_url, video_title, duration, upload_date, view_count, description, thumbnail, publisher_id) values (${Number(pIndex)}, "${videoInfo.id}", "${videoInfo.url}", "${videoInfo.title}", ${videoInfo.duration}, "${videoInfo.uploadDate}", ${videoInfo.viewCount}, "${videoInfo.description}", "${videoInfo.thumbnail}", ${publisherID}) 
                 on duplicate key update video_title=values(video_title), upload_date=values(upload_date), view_count=values(view_count), description=values(description), thumbnail=values(thumbnail), publisher_id=values(publisher_id);`;
                 let insertResult = await db.querySync(insertQ);
-                if (!insertResult.result) {
+                if (insertResult.result) {
+                    videoId = insertResult.message.insertId;
+                } else {
                     return {result: false, message: insertResult.message};
                 }
                 // 영상 카테고리 저장
@@ -39,7 +42,7 @@ module.exports = {
                     }
                 }
                 // 모든 데이터 저장이 올바르게 끝났을 경우
-                return {result: true};
+                return {result: true, message: videoId};
             } else {
                 return {result: false, message: selectResult};
             }

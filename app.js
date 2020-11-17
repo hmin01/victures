@@ -8,7 +8,7 @@ const session = require('express-session');
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/user');
 const videoRouter = require('./routes/video');
-const convertRouter = require('./routes/convert');
+const processRouter = require('./routes/process');
 
 const app = express();
 
@@ -35,7 +35,7 @@ app.use('/source', express.static(path.join(__dirname, '/public/dist')));
 app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/video', videoRouter);
-app.use('/convert', convertRouter);
+app.use('/process', processRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

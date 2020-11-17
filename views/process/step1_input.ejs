@@ -31,7 +31,7 @@
                                 <a class="nav-link" href="/video">List</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/convert/step/import">Convert</a>
+                                <a class="nav-link" href="/process/step/import">Convert</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Coming soon</a>
@@ -94,11 +94,11 @@
                 } else {
                     $.ajax({
                         type: "POST",
-                        url: "/convert/step/import",
+                        url: "/process/parse/url",
                         data: "url=" + encodeURIComponent(url),
                         success: function(res) {
                             if (res.result) {
-                                location.href = "/convert/step/info";
+                                location.href = "/process/step/info";
                             } else {
                                 alert(res.message);
                             }

@@ -109,7 +109,7 @@
                                 <a class="nav-link" href="/video">List</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/convert/step/import">Convert</a>
+                                <a class="nav-link" href="/process/step/input">Convert</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Coming soon</a>
@@ -260,7 +260,7 @@
                 // Get video info (using session)
                 $.ajax({
                     type: "POST",
-                    url: "/convert/step/info",
+                    url: "/process/info",
                     success: function(res) {
                         if (res.result) {
                             subtitles = res.message.subtitles;
@@ -295,7 +295,7 @@
                             });
                         } else {
                             alert("Session expiration");
-                            location.href = '/convert/step/import';
+                            location.href = '/process/step/input';
                         }
                     }
                 });
@@ -324,7 +324,7 @@
                         if (duration > (60 * 20)) {
                             alert("현재 Beta 버전에서는 영상 길이가 최대 20분인 영상만 지원하고 있습니다.");
                         } else {
-                            location.href = '/convert/step/process';
+                            location.href = '/process/step/extract';
                         }
                     } else {
                         alert("한글 자막이 없는 영상은 현재 지원하고 있지 않습니다.");

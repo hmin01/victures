@@ -194,7 +194,7 @@
                                 <a class="nav-link" href="/video">List</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/convert/step/import">Convert</a>
+                                <a class="nav-link" href="/process/step/input">Convert</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Coming soon</a>
@@ -266,7 +266,7 @@
             // Get frames
             $.ajax({
                 type: "GET",
-                url: "/convert/step/select/frames",
+                url: "/process/result",
                 success: function(res) {
                     if (res.result) {
                         $('#total-frame-count').text(res.frames.length);
@@ -373,7 +373,7 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "/convert/step/save",
+                    url: "/process/save",
                     data: "selected=" + JSON.stringify(selected),
                     success: function(res) {
                         if (res.result) {

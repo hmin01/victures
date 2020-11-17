@@ -70,7 +70,7 @@
                                 <a class="nav-link" href="/video">List</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/convert/step/import">Convert</a>
+                                <a class="nav-link" href="/process/step/input">Convert</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Coming soon</a>
@@ -125,9 +125,9 @@
                             </div>
                         </div>
                         <div class="form-button">
-                            <a class="basis-button rounded-sm px-3" name="prev" href="/convert/step/info">Prev</a>
+                            <a class="basis-button rounded-sm px-3" name="prev" href="/process/step/info">Prev</a>
                             <a class="basis-button rounded-sm px-3 d-none" name="retry"><i class="fas fa-redo mr-1"></i>Retry</a>
-                            <a class="basis-button rounded-sm px-3 d-none" name="next" href="/convert/step/select">Next</a>
+                            <a class="basis-button rounded-sm px-3 d-none" name="next" href="/process/step/select">Next</a>
                         </div>
                     </div>
                 </div>
@@ -158,33 +158,33 @@
             function checkProcessState(index, type) {
                 $.ajax({
                     type: "GET",
-                    url: "/convert/step/state?type=" + type,
+                    url: "/process/state?type=" + type,
                     success: function(res) {
                         if (res.result) {
-                            if (res.state === "success") {
+                            if (res.message === "success") {
                                 pollingState = false;
                                 if (type === "download") {
                                     processingStep(index, "success", "Success to download video");
                                     // Next step (extract)
                                     processingStep(index + 1, "processing", "Extracting keywords...");
-                                    ps_extractKeywords(index + 1);
-                                } else if (type === "extractKeywords") {
+                                    ps_extractKeyword(index + 1);
+                                } else if (type === "extractKeyword") {
                                     processingStep(index, "success", "Success to extract keywords");
                                     // Next step (extract)
                                     processingStep(index + 1, "processing", "Extracting frames...");
-                                    ps_extractFrames(index + 1);
-                                } else if (type === "extractFrames") {
+                                    ps_extractFrame(index + 1);
+                                } else if (type === "extractFrame") {
                                     processingStep(index, "success", "Success to extract frames");
                                     // Delete state file
                                     delete_tempFile("next");
                                 }
-                            } else if (res.state === "fail") {
+                            } else if (res.message === "fail") {
                                 pollingState = false;
                                 if (type === "download") {
                                     processingStep(index, 'fail', "Failed to download video");
-                                } else if (type === "extractKeywords") {
+                                } else if (type === "extractKeyword") {
                                     processingStep(index, 'fail', "Failed to extract keywords");
-                                } else if (type === "extractFrames") {
+                                } else if (type === "") {
                                     processingStep(index, 'fail', "Failed to extract frames");
                                 }
                                 delete_tempFile("retry");
@@ -192,6 +192,15 @@
                         } else {
                             pollingState = false;
                             console.error(res.message);
+
+                            if (type === "download") {
+                                processingStep(index, 'fail', "Failed to download video");
+                            } else if (type === "extractKeyword") {
+                                processingStep(index, 'fail', "Failed to extract keywords");
+                            } else if (type === "extractFrame") {
+                                processingStep(index, 'fail', "Failed to extract frames");
+                            }
+                            delete_tempFile("retry");
                         }
                     },
                     error: function() {
@@ -211,7 +220,7 @@
             function ps_download(index) {
                 $.ajax({
                     type: "POST",
-                    url: "/convert/step/download",
+                    url: "/process/download",
                     success: function(res) {
                         if (res.result) {
                             checkProcessState(index, "download");
@@ -230,13 +239,13 @@
             }
 
             // Extract keywords
-            function ps_extractKeywords(index) {
+            function ps_extractKeyword(index) {
                 $.ajax({
                     type: "POST",
-                    url: "/convert/step/extract/keywords",
+                    url: "/process/extract/keyword",
                     success: function(res) {
                         if (res.result) {
-                            checkProcessState(index, "extractKeywords");
+                            checkProcessState(index, "extractKeyword");
                             pollingState = true;
                         } else {
                             alert(res.message);
@@ -252,13 +261,13 @@
             }
 
             // Extract frames
-            function ps_extractFrames(index) {
+            function ps_extractFrame(index) {
                 $.ajax({
                     type: "POST",
-                    url: "/convert/step/extract/frames",
+                    url: "/process/extract/frame",
                     success: function(res) {
                         if (res.result) {
-                            checkProcessState(index, "extractFrames");
+                            checkProcessState(index, "extractFrame");
                             pollingState = true;
                         } else {
                             alert(res.message);
@@ -277,7 +286,7 @@
             function delete_tempFile(state="retry") {
                 $.ajax({
                     type: "DELETE",
-                    url: "/convert/step/state",
+                    url: "/process/state",
                     success: function(res) {
                         if (res.result) {
                             $(`.form-button .basis-button[name="${state}"]`).removeClass('d-none');
